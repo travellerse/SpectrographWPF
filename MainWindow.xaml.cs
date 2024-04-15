@@ -1,4 +1,5 @@
-﻿using SpectrographWPF.SerialPortControl;
+﻿using SpectrographWPF.FrameData;
+using SpectrographWPF.SerialPortControl;
 using System.Windows;
 using System.Windows.Media;
 
@@ -12,8 +13,31 @@ namespace SpectrographWPF
         public MainWindow()
         {
             InitializeComponent();
-        }
+            plot.Plot.Axes.SetLimits(1, 10568, 400, 700);
+            var portList = serialPortManager.FindPort();
+            if (portList != null)
+            {
+                portsComboBox.Items.Clear();
+                portsComboBox.ItemsSource = portList;
+                portsComboBox.SelectedIndex = 0;
+                portsComboBox.IsEnabled = true;
+                findPortButton.IsEnabled = true;
+                Information(string.Format("查找到可以使用的端口{0}个。", portsComboBox.Items.Count.ToString()));
+            }
+            else
+            {
+                Alert("Oops，没有查找到可用端口；您可以点击“查找”按钮手动查找。");
+                findPortButton.IsEnabled = false;
+            }
 
+            timer.Elapsed += (sender, e) =>
+            {
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    DataUpdate();
+                }));
+            };
+        }
         SerialPortManager serialPortManager = new();
 
         private void Information(string message)

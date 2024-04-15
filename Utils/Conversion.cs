@@ -15,19 +15,27 @@ namespace SpectrographWPF.Utils
         public static string ToSpecifiedText(string text, ConversionType conversionType, Encoding encoding)
         {
             byte[] bytes = encoding.GetBytes(text);
-            switch (conversionType)
+            return conversionType switch
             {
-                case ConversionType.Hex:
-                    return BitConverter.ToString(bytes).Replace("-", " ");
-                case ConversionType.Dec:
-                    return string.Join(" ", bytes);
-                case ConversionType.Bin:
-                    return string.Join(" ", bytes);
-                case ConversionType.Oct:
-                    return string.Join(" ", bytes);
-                default:
-                    return string.Empty;
-            }
+                ConversionType.Hex => BitConverter.ToString(bytes).Replace("-", " "),
+                ConversionType.Dec => string.Join(" ", bytes),
+                ConversionType.Bin => string.Join(" ", bytes),
+                ConversionType.Oct => string.Join(" ", bytes),
+                _ => string.Empty,
+            };
         }
+
+        public static string ToSpecifiedText(byte[] bytes, ConversionType conversionType, Encoding encoding)
+        {
+            return conversionType switch
+            {
+                ConversionType.Hex => BitConverter.ToString(bytes).Replace("-", " "),
+                ConversionType.Dec => string.Join(" ", bytes),
+                ConversionType.Bin => string.Join(" ", bytes),
+                ConversionType.Oct => string.Join(" ", bytes),
+                _ => string.Empty,
+            };
+        }
+
     }
 }

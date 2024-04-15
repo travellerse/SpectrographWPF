@@ -20,6 +20,7 @@
             </MenuItem>
 
             <MenuItem Header="视图(_V)">
+                <MenuItem Name="recvDataMenuItem" Click="RecvDataMenuItem_OnClick" Header="接受区" IsChecked="True" ></MenuItem>
             </MenuItem>
 
             <MenuItem Header="帮助(_H)">
@@ -64,6 +65,18 @@
                                     <TextBlock Text="可用端口" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
                                     <ComboBox Name="portsComboBox" Width="120" Grid.Column="1" Padding="5" IsEnabled="False"></ComboBox>
                                 </Grid>
+                                <!--虚拟串口-->
+                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="虚拟串口"  VerticalAlignment="Center" Grid.Column="0"></TextBlock>
+                                    <ComboBox Name="virtualSerialComboBox" Width="120" Grid.Column="1" Text="True" Padding="5">
+                                        <ComboBoxItem Tag="True" IsSelected="True">True</ComboBoxItem>
+                                        <ComboBoxItem Tag="False">False</ComboBoxItem>
+                                    </ComboBox>
+                                </Grid>
                                 <!--通讯波特率-->
                                 <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
@@ -83,6 +96,10 @@
                                         <ComboBoxItem>380400</ComboBoxItem>
                                         <ComboBoxItem>460800</ComboBoxItem>
                                         <ComboBoxItem IsSelected="True">921600</ComboBoxItem>
+                                        <ComboBoxItem>1792000</ComboBoxItem>
+                                        <ComboBoxItem>1843200</ComboBoxItem>
+                                        <ComboBoxItem>3584000</ComboBoxItem>
+                                        <ComboBoxItem>3686400</ComboBoxItem>
                                     </ComboBox>
                                 </Grid>
                                 <!--奇偶校验位-->
@@ -159,18 +176,18 @@
                         </GroupBox>
                     </Grid>
                 </ScrollViewer>
-                <Grid Margin="5">
+                <Grid Margin="5" Name="dataGrid">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="85*"></RowDefinition>
-                        <RowDefinition Height="100*"></RowDefinition>
+                        <RowDefinition Height="150"></RowDefinition>
+                        <RowDefinition Height="120*"></RowDefinition>
                         <RowDefinition Height="60"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <GroupBox Grid.Row="0" Header="接收区" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
+                    <GroupBox Grid.Row="0" Name="recvDataGroupBox" Header="接收区" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
                         <RichTextBox Name="recvDataRichTextBox" Margin="2,5" BorderThickness="0" IsReadOnly="True">
                             <FlowDocument LineHeight="1.5" FontSize="14" FontFamily="Lucida Console"></FlowDocument>
                         </RichTextBox>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Header="数据波形" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
+                    <GroupBox Grid.Row="1" Name="dataPlotGroupBox" Header="数据波形" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
                         <Grid Margin="0,5">
                             <ScottPlot:WpfPlot Name="plot" Margin="5" Background="White" Height="Auto" Width="Auto" />
                         </Grid>
@@ -180,10 +197,24 @@
                         <Grid Margin="0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="90*"></ColumnDefinition>
+                                <ColumnDefinition Width="30"></ColumnDefinition>
+                                <ColumnDefinition Width="60"></ColumnDefinition>
+                                <ColumnDefinition Width="80"></ColumnDefinition>
                                 <ColumnDefinition Width="80"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <TextBox Name="sendDataTextBox" FontFamily="Lucida Console" Grid.Column="0" VerticalAlignment="Center" Padding="5" Margin="5,0,0,0">@c0080#@</TextBox>
-                            <Button Name="sendDataButton" Click="SendDataButton_Click" VerticalAlignment="Center" Grid.Column="1" Padding="3" Content="发送" Margin="5,0"></Button>
+                            <TextBlock Text=" FPS" VerticalAlignment="Center" Grid.Column="1"></TextBlock>
+                            <ComboBox Name="FpsComboBox" Width="60" Grid.Column="2" IsEditable="True" Padding="5">
+                                <ComboBoxItem>1</ComboBoxItem>
+                                <ComboBoxItem>2</ComboBoxItem>
+                                <ComboBoxItem>3</ComboBoxItem>
+                                <ComboBoxItem>4</ComboBoxItem>
+                                <ComboBoxItem>6</ComboBoxItem>
+                                <ComboBoxItem IsSelected="True">12</ComboBoxItem>
+                                <ComboBoxItem>24</ComboBoxItem>
+                            </ComboBox>
+                            <Button Name="sendDataButton" Click="SendDataButton_Click" VerticalAlignment="Center" Grid.Column="3" Padding="3" Content="单次" Margin="5,0"></Button>
+                            <Button Name="startWorkButton" Click="StartWorkButton_Click" VerticalAlignment="Center" Grid.Column="4" Padding="3" Content="开始" Margin="5,0"></Button>
                             <Grid></Grid>
                         </Grid>
                     </GroupBox>
