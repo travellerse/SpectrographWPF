@@ -1,5 +1,4 @@
-﻿using SpectrographWPF.SerialPortControl;
-using SpectrographWPF.Utils;
+﻿using SpectrographWPF.Utils;
 using System.Windows;
 
 namespace SpectrographWPF
@@ -47,8 +46,7 @@ namespace SpectrographWPF
 
         public void SendDataButton_Click(object sender, RoutedEventArgs e)
         {
-            serialPortManager.WriteData(sendDataTextBox.Text);
-            string rewData = serialPortManager.ReadData() + " ";
+            string rewData = serialPortManager.Update() + " ";
             string data = Conversion.ToSpecifiedText(rewData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8);
             recvDataRichTextBox.AppendText(data);
             Information("数据已发送。");

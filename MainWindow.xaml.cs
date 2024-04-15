@@ -1,5 +1,4 @@
 ﻿using SpectrographWPF.SerialPortControl;
-using System.IO.Ports;
 using System.Windows;
 using System.Windows.Media;
 
