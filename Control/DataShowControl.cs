@@ -6,6 +6,7 @@ namespace SpectrographWPF
     {
         private void RecvDataMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
+            /*
             if (recvDataGroupBox.Visibility == Visibility.Visible)
             {
                 recvDataMenuItem.IsChecked = false;
@@ -16,6 +17,7 @@ namespace SpectrographWPF
                 recvDataMenuItem.IsChecked = true;
                 recvDataGroupBox.Visibility = Visibility.Visible;
             }
+            */
         }
     }
 }

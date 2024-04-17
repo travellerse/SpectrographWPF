@@ -58,8 +58,11 @@ namespace SpectrographWPF
         private void Alert(string message)
         {
             // #FF68217A
-            statusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x21, 0x2A));
-            statusInfoTextBlock.Text = message;
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                statusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x21, 0x2A));
+                statusInfoTextBlock.Text = message;
+            }));
         }
     }
 }

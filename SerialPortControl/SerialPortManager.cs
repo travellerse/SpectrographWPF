@@ -36,10 +36,7 @@ namespace SpectrographWPF.SerialPortControl
             _serialPort.DiscardInBuffer();
             _serialPort.DiscardOutBuffer();
             _serialPort.Write(data);
-            //var sleepTime = 1000 / OrderFramePerSecond;
 
-            //模块返回一帧数据（接收用HEX格式），包括4个帧头（0x3c,0x3f,0x33,0x3f），10568*2 个像素数据（输出10568*2个不带坐标16进制数, 10568个像素，每个像素2个字节，按顺序，高4位在前，低8位在后,如0x08 0xfc），两个帧尾（0x4f,0x4b）
-            //包含空格总长63425
             byte[] buffer;
             if (isVirtual)
             {
@@ -49,7 +46,7 @@ namespace SpectrographWPF.SerialPortControl
                 {
                     Thread.Sleep(1);
                     loopCount++;
-                    if (loopCount > 100)
+                    if (loopCount > 20)
                     {
                         throw new ArgumentException(_serialPort.BytesToRead.ToString());
                     }
@@ -63,7 +60,7 @@ namespace SpectrographWPF.SerialPortControl
                 {
                     Thread.Sleep(1);
                     loopCount++;
-                    if (loopCount > 100)
+                    if (loopCount > 20)
                     {
                         throw new ArgumentException((alreadyRead + _serialPort.BytesToRead).ToString());
                     }

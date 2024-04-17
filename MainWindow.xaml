@@ -178,22 +178,23 @@
                 </ScrollViewer>
                 <Grid Margin="5" Name="dataGrid">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="150"></RowDefinition>
                         <RowDefinition Height="120*"></RowDefinition>
                         <RowDefinition Height="60"></RowDefinition>
                     </Grid.RowDefinitions>
+                    <!--
                     <GroupBox Grid.Row="0" Name="recvDataGroupBox" Header="接收区" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
                         <RichTextBox Name="recvDataRichTextBox" Margin="2,5" BorderThickness="0" IsReadOnly="True">
                             <FlowDocument LineHeight="1.5" FontSize="14" FontFamily="Lucida Console"></FlowDocument>
                         </RichTextBox>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Name="dataPlotGroupBox" Header="数据波形" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
+                    -->
+                    <GroupBox Grid.Row="0" Name="dataPlotGroupBox" Header="数据波形" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
                         <Grid Margin="0,5">
                             <ScottPlot:WpfPlot Name="plot" Margin="5" Background="White" Height="Auto" Width="Auto" />
                         </Grid>
 
                     </GroupBox>
-                    <GroupBox Grid.Row="2" Header="发送区" IsEnabled="{Binding ElementName=portsComboBox, Path=IsEnabled}"  BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
+                    <GroupBox Grid.Row="1" Header="发送区" IsEnabled="{Binding ElementName=portsComboBox, Path=IsEnabled}"  BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
                         <Grid Margin="0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="90*"></ColumnDefinition>

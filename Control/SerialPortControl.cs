@@ -1,6 +1,5 @@
-﻿using System.Diagnostics;
-using SpectrographWPF.Utils;
-using System.Timers;
+﻿using SpectrographWPF.Utils;
+using System.Diagnostics;
 using System.Windows;
 using Timer = System.Timers.Timer;
 
@@ -17,7 +16,7 @@ namespace SpectrographWPF
                 portsComboBox.SelectedIndex = 0;
                 portsComboBox.IsEnabled = true;
                 findPortButton.IsEnabled = true;
-                Information(string.Format("查找到可以使用的端口{0}个。", portsComboBox.Items.Count.ToString()));
+                Information($"查找到可以使用的端口{portList.Length}个。");
             }
             else
             {
@@ -60,53 +59,47 @@ namespace SpectrographWPF
 
         }
 
-        public int loseFrameCount = 0;
+        public int LoseFrameCount = 0;
 
         public void DataUpdate()
         {
             Stopwatch sw = Stopwatch.StartNew();
             sw.Start();
-            var isVirtualSerial = true;
-            if (virtualSerialComboBox.Text == "True")
-                isVirtualSerial = true;
-            else if (virtualSerialComboBox.Text == "False")
-                isVirtualSerial = false;
+            var isVirtualSerial = virtualSerialComboBox.Text == "True";
             byte[] rawData;
             try
             {
-                rawData = serialPortManager.Update(isVirtualSerial);
+                rawData = serialPortManager.Update(isVirtualSerial, sendDataTextBox.Text);
             }
             catch (Exception e)
             {
-                loseFrameCount++;
+                LoseFrameCount++;
                 Alert(e.ToString());
                 return;
             }
-            var data =
-                Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8);
-            //recvDataRichTextBox.AppendText(data);
-            //recvDataRichTextBox.ScrollToEnd();
-            this.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                FrameData.FrameData frameData = new(data, isVirtualSerial);
-                int n = frameData.Amplitude.Length;
-                plot.Plot.Clear();
-                plot.Plot.Add.Signal(frameData.Amplitude);
-                plot.Plot.Axes.SetLimits(1, n, frameData.Amplitude.Min() - 5, frameData.Amplitude.Max() + 5);
-                plot.Refresh();
-            }));
+            var data = Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8);
+
+            PlotUpdate(data, isVirtualSerial);
+
             sw.Stop();
             var time = Math.Round(sw.ElapsedTicks / (decimal)Stopwatch.Frequency, 6);
             string maxData = isVirtualSerial ? "63785" : "63425";
-            Information("数据长度:" + data.Length.ToString() + "/" + maxData + "   用时:" + time + "   Max FPS:" + Math.Round(1 / time, 2) + "   丢帧:" + loseFrameCount);
+            Information($"数据长度:{data.Length}/{maxData}   用时:{time}   Max FPS:{Math.Round(1 / time, 2)}   丢帧:{LoseFrameCount}");
+        }
+
+        public void PlotUpdate(string data, bool isVirtualSerial)
+        {
+            FrameData.FrameData frameData = new(data, isVirtualSerial);
+            int n = frameData.Amplitude.Length;
+            plot.Plot.Clear();
+            plot.Plot.Add.Signal(frameData.Amplitude);
+            plot.Plot.Axes.SetLimits(1, n, frameData.Amplitude.Min() - 5, frameData.Amplitude.Max() + 5);
+            plot.Refresh();
         }
 
         public void SendDataButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                DataUpdate();
-            }));
+            this.Dispatcher.BeginInvoke(new Action(DataUpdate));
         }
         Timer timer = new(1000);
 
@@ -119,7 +112,7 @@ namespace SpectrographWPF
                     startWorkButton.Content = "停止";
                     FpsComboBox.IsEnabled = false;
                     timer.Interval = 1000.0 / int.Parse(FpsComboBox.Text);
-                    loseFrameCount = 0;
+                    LoseFrameCount = 0;
                     timer.Start();
                 }
                 else

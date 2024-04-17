@@ -1,4 +1,7 @@
-﻿namespace SpectrographWPF.FrameData
+﻿using MathNet.Filtering;
+using MathNet.Filtering.Kalman;
+
+namespace SpectrographWPF.FrameData
 {
 
     public class FrameData
@@ -7,9 +10,9 @@
 
         public bool IsVirtual;
 
-        private int PreDummy = 64;
+        private const int PreDummy = 64;
 
-        private int AfterDummy = 14;
+        private const int AfterDummy = 14;
 
         public FrameData() { }
 
@@ -70,7 +73,7 @@
                     }
                 }
 
-                if (bytes[n - 2] != "4F" || bytes[n - 1] != "4B")//-66 -65
+                if (bytes[n - 2] != "4F" || bytes[n - 1] != "4B") //-66 -65
                 {
                     //throw new ArgumentException("Invalid frame tail:" + bytes[n - 2].ToString() + " " + bytes[n - 1].ToString());
                 }
@@ -81,9 +84,15 @@
                 }
             }
 
-
-
+            Filter();
         }
+
+        //滤波
+        //MathNet.Filtering
+        public void Filter()
+        {
+        }
+
 
     }
 }
