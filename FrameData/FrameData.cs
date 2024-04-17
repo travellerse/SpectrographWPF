@@ -1,7 +1,4 @@
-﻿using MathNet.Filtering;
-using MathNet.Filtering.Kalman;
-
-namespace SpectrographWPF.FrameData
+﻿namespace SpectrographWPF.FrameData
 {
 
     public class FrameData
@@ -88,7 +85,6 @@ namespace SpectrographWPF.FrameData
         }
 
         //滤波
-        //MathNet.Filtering
         public void Filter()
         {
         }

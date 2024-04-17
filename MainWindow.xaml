@@ -214,8 +214,8 @@
                                 <ComboBoxItem IsSelected="True">12</ComboBoxItem>
                                 <ComboBoxItem>24</ComboBoxItem>
                             </ComboBox>
-                            <Button Name="sendDataButton" Click="SendDataButton_Click" VerticalAlignment="Center" Grid.Column="3" Padding="3" Content="单次" Margin="5,0"></Button>
-                            <Button Name="startWorkButton" Click="StartWorkButton_Click" VerticalAlignment="Center" Grid.Column="4" Padding="3" Content="开始" Margin="5,0"></Button>
+                            <Button Name="sendDataButton" Click="SendDataButton_Click" IsEnabled="False" VerticalAlignment="Center" Grid.Column="3" Padding="3" Content="单次" Margin="5,0"></Button>
+                            <Button Name="startWorkButton" Click="StartWorkButton_Click" IsEnabled="False" VerticalAlignment="Center" Grid.Column="4" Padding="3" Content="开始" Margin="5,0"></Button>
                             <Grid></Grid>
                         </Grid>
                     </GroupBox>

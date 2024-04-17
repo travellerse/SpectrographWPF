@@ -34,6 +34,8 @@ namespace SpectrographWPF
                     serialPortManager.OpenPort(portsComboBox.Text, int.Parse(baudRateComboBox.Text),
                         int.Parse(dataBitsComboBox.Text), int.Parse(stopBitsComboBox.Text));
                     openClosePortButton.Content = "关闭端口";
+                    sendDataButton.IsEnabled = true;
+                    startWorkButton.IsEnabled = true;
                     Information("端口已打开。");
                 }
                 catch
@@ -48,6 +50,8 @@ namespace SpectrographWPF
                 {
                     serialPortManager.ClosePort();
                     openClosePortButton.Content = "打开";
+                    sendDataButton.IsEnabled = false;
+                    startWorkButton.IsEnabled = false;
                     Information("端口已关闭。");
                 }
                 catch
