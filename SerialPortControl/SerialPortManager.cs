@@ -6,7 +6,6 @@ namespace SpectrographWPF.SerialPortControl
     {
         private SerialPort _serialPort = new();
         private string[]? _portList;
-        public int OrderFramePerSecond { get; } = 12;
 
         public void OpenPort(string portName, int baudRate, int dataBits, int stopBits)
         {

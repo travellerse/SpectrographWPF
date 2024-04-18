@@ -22,7 +22,7 @@ namespace SpectrographWPF
                 portsComboBox.SelectedIndex = 0;
                 portsComboBox.IsEnabled = true;
                 findPortButton.IsEnabled = true;
-                Information(string.Format("查找到可以使用的端口{0}个。", portsComboBox.Items.Count.ToString()));
+                Information($"查找到可以使用的端口{portsComboBox.Items.Count}个。");
             }
             else
             {
