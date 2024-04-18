@@ -6,7 +6,7 @@ namespace SpectrographWPF.SerialPortControl
     {
         private SerialPort _serialPort = new();
         private string[]? _portList;
-        public int OrderFramePerSecond { get; } = 4;
+        public int OrderFramePerSecond { get; } = 12;
 
         public void OpenPort(string portName, int baudRate, int dataBits, int stopBits)
         {
@@ -39,7 +39,7 @@ namespace SpectrographWPF.SerialPortControl
             var buffer = new byte[num];
             var loopCount = 0;
             var alreadyReady = 0;
-            int n;
+            int n, last_n = 0;
             while (alreadyReady < num)
             {
                 n = _serialPort.BytesToRead;
@@ -47,13 +47,14 @@ namespace SpectrographWPF.SerialPortControl
                 {
                     alreadyReady += Read(buffer, alreadyReady, n);
                 }
-                else if (n == 0)
+                else if (n == 0 || n == last_n)
                 {
                     if (++loopCount > 20)
                     {
                         throw new Exception("Read Error");
                     }
                 }
+                last_n = n;
                 Thread.Sleep(1);
             }
             return buffer;
