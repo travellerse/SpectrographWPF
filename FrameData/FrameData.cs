@@ -1,9 +1,15 @@
-﻿namespace SpectrographWPF.FrameData
+﻿using NWaves.Filters;
+using NWaves.Filters.Base;
+using ScottPlot.Palettes;
+
+namespace SpectrographWPF.FrameData
 {
 
     public class FrameData
     {
-        public int[] Amplitude { get; } = new int[10550];
+        public double[] Amplitude { get; } = new double[10550];
+
+        public PeakData[] Peaks { get; set; }
 
         public bool IsVirtual;
 
@@ -27,8 +33,6 @@
                 }
 
                 var bytes = data.Split(' ');
-
-                var n = bytes.Length;
 
                 for (var i = 0; i < 4; i++)
                 {
@@ -72,7 +76,7 @@
 
                 if (bytes[n - 2] != "4F" || bytes[n - 1] != "4B") //-66 -65
                 {
-                    //throw new ArgumentException("Invalid frame tail:" + bytes[n - 2].ToString() + " " + bytes[n - 1].ToString());
+                    throw new ArgumentException("Invalid frame tail:" + bytes[n - 2].ToString() + " " + bytes[n - 1].ToString());
                 }
 
                 for (var i = PreDummy; i < 10628 - AfterDummy; i++)
@@ -81,12 +85,36 @@
                 }
             }
 
-            Filter();
+            //SmoothData();
+            SymmetricZeroAreaPeaking();
         }
 
-        //滤波
-        public void Filter()
+        //对称零面积寻峰
+        private void SymmetricZeroAreaPeaking()
         {
+
+        }
+
+        private void SmoothData()
+        {
+            var n = Amplitude.Length;
+            var temp = new double[n];
+            for (var i = 0; i < n; i++)
+            {
+                if (i < 3 || i > n - 4)
+                {
+                    temp[i] = Amplitude[i];
+                }
+                else
+                {
+                    temp[i] = (Amplitude[i - 3] + Amplitude[i - 2] + Amplitude[i - 1] + Amplitude[i] + Amplitude[i + 1] + Amplitude[i + 2] + Amplitude[i + 3]) / 7;
+                }
+            }
+
+            for (var i = 0; i < n; i++)
+            {
+                Amplitude[i] = temp[i];
+            }
         }
 
 

@@ -4,83 +4,58 @@ namespace SpectrographWPF.SerialPortControl
 {
     public class SerialPortManager
     {
-        private SerialPort _serialPort;
+        private SerialPort _serialPort = new();
         private string[]? _portList;
         public int OrderFramePerSecond { get; } = 4;
 
-        public SerialPortManager()
-        {
-            _serialPort = new SerialPort();
-        }
-
-        public void OpenPort(string portName, int baudRate = 921600, int dataBits = 8, int stopBits = 1)
+        public void OpenPort(string portName, int baudRate, int dataBits, int stopBits)
         {
             _serialPort.PortName = portName;
             _serialPort.BaudRate = baudRate;
             _serialPort.DataBits = dataBits;
             _serialPort.StopBits = (StopBits)stopBits;
-            _serialPort.ReadBufferSize = 1048576;
-            _serialPort.WriteBufferSize = 1048576;
             _serialPort.Open();
-            _serialPort.DiscardInBuffer();
-            _serialPort.DiscardOutBuffer();
         }
 
-        public void ClosePort()
-        {
-            _serialPort.Close();
-        }
+        public void ClosePort() => _serialPort.Close();
+
+        public void DiscardInBuffer() => _serialPort.DiscardInBuffer();
+
+        public void DiscardOutBuffer() => _serialPort.DiscardOutBuffer();
+
+        public void Write(string data) => _serialPort.Write(data);
+
+        public int Read(byte[] buffer, int offset, int count) => _serialPort.Read(buffer, offset, count);
+
+        public bool IsOpen() => _serialPort.IsOpen;
 
         public byte[] Update(bool isVirtual, string data = "@c0080#@")
         {
-            _serialPort.DiscardInBuffer();
-            _serialPort.DiscardOutBuffer();
-            _serialPort.Write(data);
+            DiscardInBuffer();
+            DiscardOutBuffer();
+            Write(data);
 
-            byte[] buffer;
-            if (isVirtual)
+            var num = isVirtual ? 21262 : 21142;
+            var buffer = new byte[num];
+            var loopCount = 0;
+            var alreadyReady = 0;
+            int n;
+            while (alreadyReady < num)
             {
-                buffer = new byte[21262];
-                int loopCount = 0;
-                while (_serialPort.BytesToRead < 12288)//16384
-                {
-                    Thread.Sleep(1);
-                    loopCount++;
-                    if (loopCount > 20)
-                    {
-                        throw new ArgumentException(_serialPort.BytesToRead.ToString());
-                    }
-                }
-                var n = _serialPort.BytesToRead;
-                var alreadyRead = _serialPort.Read(buffer, 0, n);
-                //_serialPort.DiscardInBuffer();
-                _serialPort.DiscardOutBuffer();
-                loopCount = 0;
-                while (alreadyRead + _serialPort.BytesToRead < 21262)//4878
-                {
-                    Thread.Sleep(1);
-                    loopCount++;
-                    if (loopCount > 20)
-                    {
-                        throw new ArgumentException((alreadyRead + _serialPort.BytesToRead).ToString());
-                    }
-                }
                 n = _serialPort.BytesToRead;
-                //21262
-                _serialPort.Read(buffer, alreadyRead, n);
-            }
-            else
-            {
-                Thread.Sleep(200);
-                while (_serialPort.BytesToRead < 21142)
+                if (n >= int.Min(4096, num - alreadyReady))
                 {
-                    Thread.Sleep(1);
+                    alreadyReady += Read(buffer, alreadyReady, n);
                 }
-                var n = _serialPort.BytesToRead;
-                buffer = new byte[n];
-                var alreadyRead = _serialPort.Read(buffer, 0, n);
+                else if (n == 0)
+                {
+                    if (++loopCount > 20)
+                    {
+                        throw new Exception("Read Error");
+                    }
+                }
+                Thread.Sleep(1);
             }
-
             return buffer;
         }
 
@@ -88,11 +63,6 @@ namespace SpectrographWPF.SerialPortControl
         {
             _portList = SerialPort.GetPortNames();
             return _portList;
-        }
-
-        public bool IsOpen()
-        {
-            return _serialPort.IsOpen;
         }
     }
 }

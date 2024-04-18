@@ -94,10 +94,10 @@ namespace SpectrographWPF
         public void PlotUpdate(string data, bool isVirtualSerial)
         {
             FrameData.FrameData frameData = new(data, isVirtualSerial);
-            int n = frameData.Amplitude.Length;
+
             plot.Plot.Clear();
             plot.Plot.Add.Signal(frameData.Amplitude);
-            plot.Plot.Axes.SetLimits(1, n, frameData.Amplitude.Min() - 5, frameData.Amplitude.Max() + 5);
+            plot.Plot.Axes.SetLimits(1, frameData.Amplitude.Length, frameData.Amplitude.Min() - 5, frameData.Amplitude.Max() + 5);
             plot.Refresh();
         }
 
