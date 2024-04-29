@@ -1,6 +1,7 @@
 ﻿using SpectrographWPF.Utils;
 using System.Diagnostics;
 using System.Windows;
+using SpectrographWPF.FrameData;
 using Timer = System.Timers.Timer;
 
 namespace SpectrographWPF
@@ -71,9 +72,10 @@ namespace SpectrographWPF
             sw.Start();
             var isVirtualSerial = virtualSerialComboBox.Text == "True";
             byte[] rawData;
+            rawData = serialPortManager.Update(isVirtualSerial, sendDataTextBox.Text);
             try
             {
-                rawData = serialPortManager.Update(isVirtualSerial, sendDataTextBox.Text);
+                //rawData = serialPortManager.Update(isVirtualSerial, sendDataTextBox.Text);
             }
             catch (Exception e)
             {
@@ -94,10 +96,15 @@ namespace SpectrographWPF
         public void PlotUpdate(string data, bool isVirtualSerial)
         {
             FrameData.FrameData frameData = new(data, isVirtualSerial);
+            LightFrameData lightFrameData = new(frameData);
 
             plot.Plot.Clear();
+            /*
             plot.Plot.Add.Signal(frameData.Amplitude);
             plot.Plot.Axes.SetLimits(1, frameData.Amplitude.Length, frameData.Amplitude.Min() - 5, frameData.Amplitude.Max() + 5);
+            */
+            plot.Plot.Add.Scatter(lightFrameData.WaveLength, lightFrameData.Amplitude);
+            plot.Plot.Axes.SetLimits(400, 700, lightFrameData.Amplitude.Min() - 5, lightFrameData.Amplitude.Max() + 5);
             plot.Refresh();
         }
 

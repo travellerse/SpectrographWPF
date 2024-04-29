@@ -1,4 +1,4 @@
-﻿using SpectrographWPF.FrameData;
+﻿using ScottPlot;
 using SpectrographWPF.SerialPortControl;
 using System.Windows;
 using System.Windows.Media;
@@ -13,9 +13,18 @@ namespace SpectrographWPF
         public MainWindow()
         {
             InitializeComponent();
-            plot.Plot.Axes.SetLimits(1, 10568, 400, 700);
+            Init();
+        }
+
+        public void Init()
+        {
+            plot.Plot.Axes.SetLimits(1, 10550, 400, 700);
+            plot.Plot.XLabel("Pixel");
+            plot.Plot.YLabel("Amplitude");
+            plot.Plot.Title("Spectrograph");
+
             var portList = serialPortManager.FindPort();
-            if (portList != null)
+            if (portList.Length > 0)
             {
                 portsComboBox.Items.Clear();
                 portsComboBox.ItemsSource = portList;
@@ -38,6 +47,7 @@ namespace SpectrographWPF
                 }));
             };
         }
+
         SerialPortManager serialPortManager = new();
 
         private void Information(string message)
@@ -45,12 +55,12 @@ namespace SpectrographWPF
             if (serialPortManager.IsOpen())
             {
                 // #FFCA5100
-                statusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xCA, 0x51, 0x00));
+                statusBar.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0xCA, 0x51, 0x00));
             }
             else
             {
                 // #FF007ACC
-                statusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x00, 0x7A, 0xCC));
+                statusBar.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0x00, 0x7A, 0xCC));
             }
             statusInfoTextBlock.Text = message;
         }
@@ -60,7 +70,7 @@ namespace SpectrographWPF
             // #FF68217A
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
-                statusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x21, 0x2A));
+                statusBar.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0xFF, 0x21, 0x2A));
                 statusInfoTextBlock.Text = message;
             }));
         }

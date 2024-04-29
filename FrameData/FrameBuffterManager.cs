@@ -1,6 +1,4 @@
-﻿using ScottPlot;
-
-namespace SpectrographWPF.FrameData
+﻿namespace SpectrographWPF.FrameData
 {
     public class FrameBuffterManager
     {

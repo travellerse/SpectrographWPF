@@ -1,15 +1,11 @@
-﻿using NWaves.Filters;
-using NWaves.Filters.Base;
-using ScottPlot.Palettes;
-
-namespace SpectrographWPF.FrameData
+﻿namespace SpectrographWPF.FrameData
 {
 
     public class FrameData
     {
         public double[] Amplitude { get; } = new double[10550];
 
-        public PeakData[] Peaks { get; set; }
+        public PeakData[]? Peaks { get; set; }
 
         public bool IsVirtual;
 
@@ -39,13 +35,7 @@ namespace SpectrographWPF.FrameData
             }
 
             //SmoothData();
-            SymmetricZeroAreaPeaking();
-        }
-
-        //对称零面积寻峰
-        private void SymmetricZeroAreaPeaking()
-        {
-
+            //SymmetricZeroAreaPeaking();
         }
 
         private void SmoothData()

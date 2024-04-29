@@ -28,6 +28,8 @@ namespace SpectrographWPF.SerialPortControl
 
         public bool IsOpen() => _serialPort.IsOpen;
 
+        public string[] FindPort() => _portList ??= SerialPort.GetPortNames();
+
         public byte[] Update(bool isVirtual, string data = "@c0080#@")
         {
             DiscardInBuffer();
@@ -38,7 +40,7 @@ namespace SpectrographWPF.SerialPortControl
             var buffer = new byte[num];
             var loopCount = 0;
             var alreadyReady = 0;
-            int n, last_n = 0;
+            int n, lastN = 0;
             while (alreadyReady < num)
             {
                 n = _serialPort.BytesToRead;
@@ -46,23 +48,17 @@ namespace SpectrographWPF.SerialPortControl
                 {
                     alreadyReady += Read(buffer, alreadyReady, n);
                 }
-                else if (n == 0 || n == last_n)
+                else if (n == 0 || n == lastN)
                 {
                     if (++loopCount > 20)
                     {
                         throw new Exception("Read Error");
                     }
                 }
-                last_n = n;
+                lastN = n;
                 Thread.Sleep(1);
             }
             return buffer;
-        }
-
-        public string[] FindPort()
-        {
-            _portList = SerialPort.GetPortNames();
-            return _portList;
         }
     }
 }
