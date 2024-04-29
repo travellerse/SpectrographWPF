@@ -19,8 +19,8 @@ namespace SpectrographWPF
         public void Init()
         {
             plot.Plot.Axes.SetLimits(1, 10550, 400, 700);
-            plot.Plot.XLabel("Pixel");
-            plot.Plot.YLabel("Amplitude");
+            //plot.Plot.XLabel("Pixel");
+            //plot.Plot.YLabel("Amplitude");
             plot.Plot.Title("Spectrograph");
 
             var portList = serialPortManager.FindPort();

@@ -103,8 +103,8 @@ namespace SpectrographWPF
             plot.Plot.Add.Signal(frameData.Amplitude);
             plot.Plot.Axes.SetLimits(1, frameData.Amplitude.Length, frameData.Amplitude.Min() - 5, frameData.Amplitude.Max() + 5);
             */
-            plot.Plot.Add.Scatter(lightFrameData.WaveLength, lightFrameData.Amplitude);
-            plot.Plot.Axes.SetLimits(400, 700, lightFrameData.Amplitude.Min() - 5, lightFrameData.Amplitude.Max() + 5);
+            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Amplitude);
+            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400, 4500);
             plot.Refresh();
         }
 

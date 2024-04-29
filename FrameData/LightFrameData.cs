@@ -8,13 +8,14 @@
         public const double m = 1200;
         public const double F = 150;
         public double eta = 21;//Deg
-        public static double x0 = GetX(16);
+        public static double x0 = F*Math.Tan(DegToRad(16));
+        public static int num = 10550;
 
         public LightFrameData(FrameData frame)
         {
             for (int i = 0; i < 10550; i++)
             {
-                WaveLength[i] = TransLam(i);
+                WaveLength[i] = TransLam(GetX(i));
                 Amplitude[i] = frame.Amplitude[i];
             }
         }
@@ -29,14 +30,9 @@
             return deg * Math.PI / 180;
         }
 
-        public static double GetX(double fe)
+        public static double GetX(int index)
         {
-            return F * Math.Tan(DegToRad(fe));
-        }
-
-        public static double GetFe(double x)
-        {
-            return Math.Atan(x / F) * 180 / Math.PI;
+            return x0 + (index - num / 2) * 4e-3;
         }
     }
 }

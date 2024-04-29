@@ -50,7 +50,7 @@ namespace SpectrographWPF.SerialPortControl
                 }
                 else if (n == 0 || n == lastN)
                 {
-                    if (++loopCount > 20)
+                    if (++loopCount > 200)
                     {
                         throw new Exception("Read Error");
                     }
