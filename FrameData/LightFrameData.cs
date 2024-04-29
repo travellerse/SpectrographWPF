@@ -3,12 +3,12 @@
     public class LightFrameData
     {
         public double[] WaveLength { get; } = new double[10550];
-        public double[] Amplitude { get; } = new double[10550];
+        public double[] Value { get; } = new double[10550];
 
         public const double m = 1200;
         public const double F = 150;
         public double eta = 21;//Deg
-        public static double x0 = F*Math.Tan(DegToRad(16));
+        public static double x0 = F * Math.Tan(DegToRad(16));
         public static int num = 10550;
 
         public LightFrameData(FrameData frame)
@@ -16,7 +16,7 @@
             for (int i = 0; i < 10550; i++)
             {
                 WaveLength[i] = TransLam(GetX(i));
-                Amplitude[i] = frame.Amplitude[i];
+                Value[i] = frame.Amplitude[i];
             }
         }
 
