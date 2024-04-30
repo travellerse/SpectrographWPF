@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Windows;
 using SpectrographWPF.FrameData;
+using SpectrographWPF.Utils.Algorithm;
 using Timer = System.Timers.Timer;
+using ScottPlot;
 
 namespace SpectrographWPF
 {
@@ -97,15 +99,23 @@ namespace SpectrographWPF
         {
             FrameData.FrameData frameData = new(data, isVirtualSerial);
             LightFrameData lightFrameData = new(frameData);
-
+            var Peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
             plot.Plot.Clear();
-            /*
-            plot.Plot.Add.Signal(frameData.Amplitude);
-            plot.Plot.Axes.SetLimits(1, frameData.Amplitude.Length, frameData.Amplitude.Min() - 5, frameData.Amplitude.Max() + 5);
-            */
-            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Amplitude);
 
-            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400, 4500);
+            var BarsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
+            foreach (var bar in BarsPlot.Bars)
+            {
+                bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) / lightFrameData.WaveLength.Length);
+                bar.FillColor = Conversion.RgbCalculator.Calc(bar.Position);
+                bar.BorderColor = Conversion.RgbCalculator.Calc(bar.Position);
+            }
+            //plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Ss);
+            for (int i = 0; i < Peaks.Length; i++)
+            {
+                var line = plot.Plot.Add.VerticalLine(Peaks[i].index);
+                line.LinePattern = LinePattern.Dashed;
+            }
+            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400, lightFrameData.Value.Max() + 1);
             plot.Refresh();
         }
 
@@ -123,6 +133,7 @@ namespace SpectrographWPF
                 {
                     startWorkButton.Content = "停止";
                     FpsComboBox.IsEnabled = false;
+                    sendDataButton.IsEnabled = false;
                     timer.Interval = 1000.0 / int.Parse(FpsComboBox.Text);
                     LoseFrameCount = 0;
                     timer.Start();
@@ -131,6 +142,7 @@ namespace SpectrographWPF
                 {
                     startWorkButton.Content = "开始";
                     FpsComboBox.IsEnabled = true;
+                    sendDataButton.IsEnabled = true;
                     timer.Stop();
                 }
             }

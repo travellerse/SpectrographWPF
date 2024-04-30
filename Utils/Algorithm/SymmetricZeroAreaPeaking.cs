@@ -4,63 +4,88 @@ namespace SpectrographWPF.Utils.Algorithm
 {
     public class SymmetricZeroAreaPeaking
     {
+        private int W;//窗口宽度W=2m+1
+        private int m;//窗口半宽度
+        private double HL = 10;
+        private double HG = 15;
+        private double d;
 
-
-        public int W;//窗口宽度W=2m+1
-        public int m;//窗口半宽度
-        public double H = 10;
-
-        public SymmetricZeroAreaPeaking(int W)
+        public SymmetricZeroAreaPeaking(int W, int HL, int HG)
         {
             this.W = W;
+            this.HL = HL;
+            this.HG = HG;
             m = W / 2;
-        }
-
-        public double WindowFunction(double x)
-        //高斯线型
-        {
-            double d = 0;
             for (int i = -m; i <= m; ++i)
             {
-                d += f(i);
+                d += G(i);
             }
-
             d /= W;
-            return f(x) - d;
         }
 
-        public double f(double x)
+        public double WindowFunction(double j)
         {
-            return Math.Exp(-4 * Math.Log(2) * (x * x / H / H));
+            return G(j) - d;
+        }
+
+        public double G(double i)
+        //Voigt
+        {
+            double k = 0.5;
+            return 2 * k * HL / (4 * i * i + HL * HL) / Math.PI + (1 - k) * Math.Sqrt(4 * Math.Log(2)) / Math.Sqrt(Math.PI) / HG * Math.Exp(-4 * Math.Log(2) * i * i / HG / HG);
         }
 
         public PeakData[] Apply(LightFrameData data)
         {
             var n = data.Value.Length;
-            var temp = new double[n];
+            var Y = new double[n];
+            var deltaY = new double[n];
+            var Ss = new double[n];
+            var Score = new double[n];
 
-            for (int i = 0; i < n; i++)
+            var temp = new int[1024];
+            PeakData[] peaks;
+            var num = 0;
+
+            for (int i = m; i < n - m; i++)
             {
-                if (i < m || i > n - m - 1)
+                double sumY = 0;
+                double sumdeltaY = 0;
+                for (int j = -m; j <= m; j++)
                 {
-                    temp[i] = data.Value[i];
+                    double C = WindowFunction(j);
+                    sumY += data.Value[i + j] * C;
+                    sumdeltaY += data.Value[i + j] * Math.Pow(C, 2);
                 }
-                else
+                Y[i] = sumY;
+                deltaY[i] = sumdeltaY;
+                Ss[i] = Y[i] / deltaY[i];
+            }
+
+            var IMax = data.Value.Max();
+            var p = 30;
+            var SSMax = Ss.Max();
+
+            for (int i = m; i < n - m; i++)
+            {
+                Score[i] = p * Ss[i] / SSMax + (100 - p) * data.Value[i] / IMax;
+            }
+            //求Score极值
+            for (int i = m + 1; i < n - m - 1; i++)
+            {
+                if (Score[i] >= Score[i - 1] && Score[i] >= Score[i + 1] && Score[i] >= 75)
                 {
-                    double sum = 0;
-                    for (int j = i - m; j <= i + m; j++)
-                    {
-                        sum += data.Value[j] * WindowFunction(j - i);
-                    }
-                    temp[i] = sum / W;
+                    temp[num++] = i;
                 }
             }
 
-            for (int i = 0; i < n; ++i)
+            peaks = new PeakData[num];
+            for (int i = 0; i < num; ++i)
             {
-                double Ssi = 0;
-
+                peaks[i] = new PeakData(data.WaveLength[temp[i]], data.Value[temp[i]]);
             }
+
+            return peaks;
         }
 
 

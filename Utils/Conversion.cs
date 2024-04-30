@@ -38,7 +38,7 @@ namespace SpectrographWPF.Utils
             };
         }
 
-        static class RgbCalculator
+        public static class RgbCalculator
         {
 
             const int
@@ -90,10 +90,10 @@ namespace SpectrographWPF.Utils
              0.0556434, -0.2040259,  1.0572252
         ];
 
-            public static byte[] Calc(double len)
+            public static Color Calc(double len)
             {
                 if (len < LEN_MIN || len > LEN_MAX)
-                    return new byte[3];
+                    return new Color();
 
                 len -= LEN_MIN;
                 var index = (int)Math.Floor(len / LEN_STEP);
@@ -113,11 +113,7 @@ namespace SpectrographWPF.Utils
                 g = Clip(GammaCorrect_sRGB(g));
                 b = Clip(GammaCorrect_sRGB(b));
 
-                return [
-            (byte)(255 * r),
-            (byte)(255 * g),
-            (byte)(255 * b)
-        ];
+                return new Color((float)r, (float)g, (float)b);
             }
 
             static double Interpolate(double[] values, int index, double offset)

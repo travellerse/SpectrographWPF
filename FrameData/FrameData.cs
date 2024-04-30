@@ -35,7 +35,6 @@
             }
 
             //SmoothData();
-            //SymmetricZeroAreaPeaking();
         }
 
         private void SmoothData()
