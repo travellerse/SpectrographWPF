@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ScottPlot;
+﻿using ScottPlot;
 using ScottPlot.Plottables;
 
 namespace SpectrographWPF.Utils
@@ -16,5 +11,12 @@ namespace SpectrographWPF.Utils
 
         private double MinLength = 0;
         private double MaxLength = 0;
+
+
+        public void Render(RenderPack rp)
+        {
+            base.Render(rp);
+
+        }
     }
 }

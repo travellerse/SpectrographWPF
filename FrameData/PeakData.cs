@@ -2,16 +2,16 @@
 {
     public class PeakData
     {
-        public double index { get; set; }
+        public double Index { get; set; }
 
-        public double value { get; set; }
+        public double Value { get; set; }
 
         public PeakData() { }
 
         public PeakData(double index, double value)
         {
-            this.index = index;
-            this.value = value;
+            this.Index = index;
+            this.Value = value;
         }
     }
 }

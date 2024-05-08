@@ -1,10 +1,10 @@
-﻿using SpectrographWPF.Utils;
+﻿using ScottPlot;
+using SpectrographWPF.FrameData;
+using SpectrographWPF.Manager;
+using SpectrographWPF.Utils;
+using SpectrographWPF.Utils.Algorithm;
 using System.Diagnostics;
 using System.Windows;
-using SpectrographWPF.FrameData;
-using SpectrographWPF.Utils.Algorithm;
-using Timer = System.Timers.Timer;
-using ScottPlot;
 
 namespace SpectrographWPF
 {
@@ -12,8 +12,8 @@ namespace SpectrographWPF
     {
         public void FindPortButton_Click(object sender, RoutedEventArgs e)
         {
-            var portList = serialPortManager.FindPort();
-            if (portList != null)
+            var portList = SerialPortManager.FindPort();
+            if (portList.Length > 0)
             {
                 portsComboBox.ItemsSource = portList;
                 portsComboBox.SelectedIndex = 0;
@@ -35,7 +35,8 @@ namespace SpectrographWPF
                 try
                 {
                     serialPortManager.OpenPort(portsComboBox.Text, int.Parse(baudRateComboBox.Text),
-                        int.Parse(dataBitsComboBox.Text), int.Parse(stopBitsComboBox.Text));
+                        int.Parse(dataBitsComboBox.Text), int.Parse(stopBitsComboBox.Text),
+                        virtualSerialComboBox.Text == "True");
                     openClosePortButton.Content = "关闭端口";
                     sendDataButton.IsEnabled = true;
                     startWorkButton.IsEnabled = true;
@@ -70,11 +71,10 @@ namespace SpectrographWPF
 
         public void DataUpdate()
         {
-            Stopwatch sw = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
             sw.Start();
             var isVirtualSerial = virtualSerialComboBox.Text == "True";
-            byte[] rawData;
-            rawData = serialPortManager.Update(isVirtualSerial, sendDataTextBox.Text);
+            var rawData = serialPortManager.Update(sendDataTextBox.Text);
             try
             {
                 //rawData = serialPortManager.Update(isVirtualSerial, sendDataTextBox.Text);
@@ -85,36 +85,75 @@ namespace SpectrographWPF
                 Alert(e.ToString());
                 return;
             }
+
             var data = Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8);
 
             PlotUpdate(data, isVirtualSerial);
 
             sw.Stop();
             var time = Math.Round(sw.ElapsedTicks / (decimal)Stopwatch.Frequency, 6);
-            string maxData = isVirtualSerial ? "63785" : "63425";
-            Information($"数据长度:{data.Length}/{maxData}   用时:{time}   Max FPS:{Math.Round(1 / time, 2)}   丢帧:{LoseFrameCount}");
+            var maxData = isVirtualSerial ? "63785" : "63425";
+            Information(
+                $"数据长度:{data.Length}/{maxData}   用时:{time}   Max FPS:{Math.Round(1 / time, 2)}   丢帧:{LoseFrameCount}");
         }
 
         public void PlotUpdate(string data, bool isVirtualSerial)
         {
             FrameData.FrameData frameData = new(data, isVirtualSerial);
             LightFrameData lightFrameData = new(frameData);
-            var Peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
+
+
             plot.Plot.Clear();
 
-            var BarsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
-            foreach (var bar in BarsPlot.Bars)
+
+            var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
+            foreach (var bar in barsPlot.Bars)
+            {
+                bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) /
+                                              lightFrameData.WaveLength.Length);
+                bar.FillColor = Conversion.RgbCalculator.Calc(bar.Position);
+                bar.BorderColor = Conversion.RgbCalculator.Calc(bar.Position);
+            }
+            //plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Ss);
+
+            if ((bool)autoPeakingCheckBox.IsChecked)
+            {
+                var peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
+                for (int i = 0; i < peaks.Length; i++)
+                {
+                    var line = plot.Plot.Add.VerticalLine(peaks[i].Index);
+                    line.LinePattern = LinePattern.Dashed;
+                }
+            }
+
+            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400,
+                lightFrameData.Value.Max() + 1);
+            plot.Refresh();
+        }
+
+
+        public void PlotUpdate(LightFrameData lightFrameData)
+        {
+            plot.Plot.Clear();
+
+            var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
+            foreach (var bar in barsPlot.Bars)
             {
                 bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) / lightFrameData.WaveLength.Length);
                 bar.FillColor = Conversion.RgbCalculator.Calc(bar.Position);
                 bar.BorderColor = Conversion.RgbCalculator.Calc(bar.Position);
             }
-            //plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Ss);
-            for (int i = 0; i < Peaks.Length; i++)
+
+            if ((bool)autoPeakingCheckBox.IsChecked)
             {
-                var line = plot.Plot.Add.VerticalLine(Peaks[i].index);
-                line.LinePattern = LinePattern.Dashed;
+                var peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
+                foreach (var peak in peaks)
+                {
+                    var line = plot.Plot.Add.VerticalLine(peak.Index);
+                    line.LinePattern = LinePattern.Dashed;
+                }
             }
+
             plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400, lightFrameData.Value.Max() + 1);
             plot.Refresh();
         }
@@ -123,27 +162,26 @@ namespace SpectrographWPF
         {
             this.Dispatcher.BeginInvoke(new Action(DataUpdate));
         }
-        Timer timer = new(1000);
 
         public void StartWorkButton_Click(object sender, RoutedEventArgs e)
         {
             if (serialPortManager.IsOpen())
             {
-                if (!timer.Enabled)
+                if (FrameDataServer.IsRunning)
                 {
                     startWorkButton.Content = "停止";
                     FpsComboBox.IsEnabled = false;
                     sendDataButton.IsEnabled = false;
-                    timer.Interval = 1000.0 / int.Parse(FpsComboBox.Text);
                     LoseFrameCount = 0;
-                    timer.Start();
+                    FrameDataServer.Start();
                 }
                 else
                 {
                     startWorkButton.Content = "开始";
                     FpsComboBox.IsEnabled = true;
                     sendDataButton.IsEnabled = true;
-                    timer.Stop();
+                    FrameDataServer.Stop();
+
                 }
             }
             else

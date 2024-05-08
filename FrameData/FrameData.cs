@@ -5,7 +5,9 @@
     {
         public double[] Amplitude { get; } = new double[10550];
 
-        public PeakData[]? Peaks { get; set; }
+        //public PeakData[]? Peaks { get; set; }
+
+        public long Timestamp;
 
         public bool IsVirtual;
 
@@ -17,6 +19,7 @@
         //包含空格总长63425
         public FrameData(string data, bool isVirtual)
         {
+            Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             IsVirtual = isVirtual;
             var n = isVirtual ? 21262 : 21142;
             var length = isVirtual ? 63785 : 63425;

@@ -32,7 +32,7 @@
 
         public static double GetX(int index)
         {
-            return x0 + (index - num / 2) * 4e-3;
+            return x0 + (index - num / 2.0) * 4e-3;
         }
     }
 }

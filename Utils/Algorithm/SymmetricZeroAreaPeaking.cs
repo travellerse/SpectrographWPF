@@ -6,8 +6,8 @@ namespace SpectrographWPF.Utils.Algorithm
     {
         private int W;//窗口宽度W=2m+1
         private int m;//窗口半宽度
-        private double HL = 10;
-        private double HG = 15;
+        private double HL;
+        private double HG;
         private double d;
 
         public SymmetricZeroAreaPeaking(int W, int HL, int HG)

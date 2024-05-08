@@ -1,5 +1,5 @@
-﻿using System.Text;
-using ScottPlot;
+﻿using ScottPlot;
+using System.Text;
 
 namespace SpectrographWPF.Utils
 {

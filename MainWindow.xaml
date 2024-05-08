@@ -54,7 +54,11 @@
             <DockPanel>
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <Grid DockPanel.Dock="Left" Visibility="Visible">
-                        <GroupBox Name="serialPortConfigPanel" Header="串口配置面板" Margin="5,5,0,5" BorderThickness="1" BorderBrush="#FF7199E0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" Name="serialPortConfigPanel" Header="串口配置面板" Margin="5,5,0,5" BorderThickness="1" BorderBrush="#FF7199E0">
                             <DockPanel>
                                 <!--可用端口-->
                                 <Grid Margin="0,10" DockPanel.Dock="Top">
@@ -172,7 +176,30 @@
                                     </StackPanel>
                                 </Grid>
                             </DockPanel>
-
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" Name="PeakingConfigPanel" Header="寻峰" Margin="5,5,0,5" BorderThickness="1" BorderBrush="#FF7199E0">
+                            <DockPanel>
+                                <!--寻峰算法-->
+                                <Grid Margin="0,10" DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="寻峰算法" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
+                                    <ComboBox Name="autoPeakingComboBox" Width="120" Grid.Column="1" Padding="5">
+                                        <ComboBoxItem IsSelected="True">对称零面积法</ComboBoxItem>
+                                    </ComboBox>
+                                </Grid>
+                                <!--自动寻峰-->
+                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="自动寻峰" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
+                                    <CheckBox Name="autoPeakingCheckBox" Grid.Column="1" Margin="60,0,0,0"></CheckBox>
+                                </Grid>
+                            </DockPanel>
                         </GroupBox>
                     </Grid>
                 </ScrollViewer>
@@ -190,7 +217,7 @@
                     -->
                     <GroupBox Grid.Row="0" Name="dataPlotGroupBox" Header="数据波形" BorderBrush="{Binding ElementName=serialPortConfigPanel, Path=BorderBrush}" BorderThickness="{Binding ElementName=serialPortConfigPanel, Path=BorderThickness}">
                         <Grid Margin="0,5">
-                            <ScottPlot:WpfPlot Name="plot" Margin="5" Background="White" Height="Auto" Width="Auto" />
+                            <ScottPlot:WpfPlot Name="plot" Margin="5" Background="White" Height="Auto" Width="Auto" x:FieldModifier="public" />
                         </Grid>
 
                     </GroupBox>

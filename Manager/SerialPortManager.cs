@@ -1,18 +1,35 @@
 ﻿using System.IO.Ports;
 
-namespace SpectrographWPF.SerialPortControl
+namespace SpectrographWPF.Manager
 {
     public class SerialPortManager
     {
+        private static SerialPortManager? _instance = null;
+        private static readonly object Padlock = new();
         private SerialPort _serialPort = new();
-        private string[]? _portList;
+        private bool _isVirtual;
 
-        public void OpenPort(string portName, int baudRate, int dataBits, int stopBits)
+        private SerialPortManager() { }
+
+        public static SerialPortManager Instance
+        {
+            get
+            {
+                lock (Padlock)
+                {
+                    _instance ??= new SerialPortManager();
+                    return _instance;
+                }
+            }
+        }
+
+        public void OpenPort(string portName, int baudRate, int dataBits, int stopBits, bool isVirtual)
         {
             _serialPort.PortName = portName;
             _serialPort.BaudRate = baudRate;
             _serialPort.DataBits = dataBits;
             _serialPort.StopBits = (StopBits)stopBits;
+            _isVirtual = isVirtual;
             _serialPort.Open();
         }
 
@@ -28,15 +45,15 @@ namespace SpectrographWPF.SerialPortControl
 
         public bool IsOpen() => _serialPort.IsOpen;
 
-        public string[] FindPort() => _portList ??= SerialPort.GetPortNames();
+        public static string[] FindPort() => SerialPort.GetPortNames();
 
-        public byte[] Update(bool isVirtual, string data = "@c0080#@")
+        public byte[] Update(string data = "@c0080#@")
         {
             DiscardInBuffer();
             DiscardOutBuffer();
             Write(data);
 
-            var num = isVirtual ? 21262 : 21142;
+            var num = _isVirtual ? 21262 : 21142;
             var buffer = new byte[num];
             var loopCount = 0;
             var alreadyReady = 0;

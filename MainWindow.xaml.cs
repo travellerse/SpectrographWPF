@@ -1,5 +1,5 @@
-﻿using ScottPlot;
-using SpectrographWPF.SerialPortControl;
+﻿using SpectrographWPF.FrameData;
+using SpectrographWPF.Manager;
 using System.Windows;
 using System.Windows.Media;
 
@@ -18,12 +18,14 @@ namespace SpectrographWPF
 
         public void Init()
         {
+            FrameDataConsumer.DPlotUpdate = new FrameDataConsumer.PlotUpdateDelegate(PlotUpdate);
+
             plot.Plot.Axes.SetLimits(1, 10550, 400, 700);
             //plot.Plot.XLabel("Pixel");
             //plot.Plot.YLabel("Amplitude");
             plot.Plot.Title("Spectrograph");
 
-            var portList = serialPortManager.FindPort();
+            var portList = SerialPortManager.FindPort();
             if (portList.Length > 0)
             {
                 portsComboBox.Items.Clear();
@@ -38,17 +40,10 @@ namespace SpectrographWPF
                 Alert("Oops，没有查找到可用端口；您可以点击“查找”按钮手动查找。");
                 findPortButton.IsEnabled = false;
             }
-
-            timer.Elapsed += (sender, e) =>
-            {
-                this.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    DataUpdate();
-                }));
-            };
         }
 
-        SerialPortManager serialPortManager = new();
+        public SerialPortManager serialPortManager = SerialPortManager.Instance;
+
 
         private void Information(string message)
         {
