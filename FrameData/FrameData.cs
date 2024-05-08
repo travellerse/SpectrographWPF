@@ -19,7 +19,7 @@
         //包含空格总长63425
         public FrameData(string data, bool isVirtual)
         {
-            Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             IsVirtual = isVirtual;
             var n = isVirtual ? 21262 : 21142;
             var length = isVirtual ? 63785 : 63425;

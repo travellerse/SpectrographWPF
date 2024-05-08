@@ -8,7 +8,7 @@ namespace SpectrographWPF.Utils
         public SpectrographPlot(ISignalXYSource dataSource) : base(dataSource)
         {
         }
-
+        /*
         private double MinLength = 0;
         private double MaxLength = 0;
 
@@ -18,5 +18,6 @@ namespace SpectrographWPF.Utils
             base.Render(rp);
 
         }
+        */
     }
 }

@@ -1,9 +1,14 @@
-﻿namespace SpectrographWPF.FrameData
+﻿using ScottPlot;
+using SpectrographWPF.Utils;
+
+namespace SpectrographWPF.FrameData
 {
     public class LightFrameData
     {
         public double[] WaveLength { get; } = new double[10550];
         public double[] Value { get; } = new double[10550];
+        public Color[] Color { get; } = new Color[10550];
+        public long Timestamp;
 
         public const double m = 1200;
         public const double F = 150;
@@ -17,7 +22,9 @@
             {
                 WaveLength[i] = TransLam(GetX(i));
                 Value[i] = frame.Amplitude[i];
+                Color[i] = Conversion.RgbCalculator.Calc(WaveLength[i]);
             }
+            Timestamp = frame.Timestamp;
         }
 
         private double TransLam(double x)

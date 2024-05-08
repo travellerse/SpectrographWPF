@@ -1,6 +1,8 @@
 ﻿using SpectrographWPF.Manager;
 using SpectrographWPF.Utils;
 using System.Threading.Channels;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace SpectrographWPF.FrameData
 {
@@ -33,12 +35,16 @@ namespace SpectrographWPF.FrameData
             var pTask = Task.Run(() => Producer.Produce());
             var cTask = Task.Run(() => Consumer.Consume());
             IsRunning = true;
+            Producer.IsRunning = true;
+            Consumer.IsRunning = true;
         }
 
         public static void Stop()
         {
-            _channel.Writer.Complete();
             IsRunning = false;
+            Producer.IsRunning = false;
+            Consumer.IsRunning = false;
+            _channel.Reader.ReadAllAsync();
         }
     }
 
@@ -52,13 +58,16 @@ namespace SpectrographWPF.FrameData
             _writer = writer;
         }
 
+        public bool IsRunning { get; set; }
+
         public async Task Produce()
         {
-            while (true)
+            while (IsRunning)
             {
                 var rawData = _portManager.Update();
                 var frameData = new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
                 await _writer.WriteAsync(frameData);
+                Thread.Sleep(100);
             }
         }
     }
@@ -74,17 +83,17 @@ namespace SpectrographWPF.FrameData
 
         public async Task Consume()
         {
-            if (DPlotUpdate != null)
-                DPlotUpdate(await _reader.ReadAsync());
-            else
+            if (DPlotUpdate == null) throw new Exception("delegate is null!");
+            while (IsRunning)
             {
-                throw new Exception("delegate is null!");
+                await Application.Current.Dispatcher.BeginInvoke(async () => DPlotUpdate(await _reader.ReadAsync()));
+                Thread.Sleep(10);
             }
         }
 
         public delegate void PlotUpdateDelegate(LightFrameData data);
 
         public static PlotUpdateDelegate? DPlotUpdate { set; get; }
-
+        public bool IsRunning { get; set; }
     }
 }

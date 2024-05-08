@@ -137,11 +137,12 @@ namespace SpectrographWPF
             plot.Plot.Clear();
 
             var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
+            int index = 0;
             foreach (var bar in barsPlot.Bars)
             {
                 bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) / lightFrameData.WaveLength.Length);
-                bar.FillColor = Conversion.RgbCalculator.Calc(bar.Position);
-                bar.BorderColor = Conversion.RgbCalculator.Calc(bar.Position);
+                bar.FillColor = lightFrameData.Color[index];
+                bar.BorderColor = lightFrameData.Color[index++];
             }
 
             if ((bool)autoPeakingCheckBox.IsChecked)
@@ -156,6 +157,7 @@ namespace SpectrographWPF
 
             plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400, lightFrameData.Value.Max() + 1);
             plot.Refresh();
+            Information($"延迟:{DateTimeOffset.Now.ToUnixTimeMilliseconds() - lightFrameData.Timestamp}ms");
         }
 
         public void SendDataButton_Click(object sender, RoutedEventArgs e)
@@ -167,13 +169,14 @@ namespace SpectrographWPF
         {
             if (serialPortManager.IsOpen())
             {
-                if (FrameDataServer.IsRunning)
+                if (!FrameDataServer.IsRunning)
                 {
                     startWorkButton.Content = "停止";
                     FpsComboBox.IsEnabled = false;
                     sendDataButton.IsEnabled = false;
                     LoseFrameCount = 0;
                     FrameDataServer.Start();
+
                 }
                 else
                 {
