@@ -2,7 +2,6 @@
 using SpectrographWPF.Utils;
 using System.Threading.Channels;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace SpectrographWPF.FrameData
 {
@@ -10,7 +9,7 @@ namespace SpectrographWPF.FrameData
     {
         private static FrameDataServer? _instance = null;
         private static readonly object Padlock = new();
-        private static readonly Channel<LightFrameData> _channel = Channel.CreateUnbounded<LightFrameData>();
+        private static readonly Channel<LightFrameData> _channel = Channel.CreateBounded<LightFrameData>(1);
         public static bool IsRunning { get; private set; }
 
         private static readonly FrameDataProducer Producer = new(_channel.Writer);
@@ -67,7 +66,7 @@ namespace SpectrographWPF.FrameData
                 var rawData = _portManager.Update();
                 var frameData = new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
                 await _writer.WriteAsync(frameData);
-                Thread.Sleep(100);
+                Thread.Sleep(150);
             }
         }
     }
