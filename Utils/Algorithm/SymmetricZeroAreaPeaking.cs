@@ -63,7 +63,7 @@ namespace SpectrographWPF.Utils.Algorithm
             }
 
             var IMax = data.Value.Max();
-            var p = 30;
+            var p = 70;
             var SSMax = Ss.Max();
 
             for (int i = m; i < n - m; i++)

@@ -6,7 +6,7 @@ namespace SpectrographWPF.Manager
     {
         private static SerialPortManager? _instance = null;
         private static readonly object Padlock = new();
-        private SerialPort _serialPort = new();
+        private readonly SerialPort _serialPort = new();
         private bool _isVirtual;
 
         private SerialPortManager() { }
@@ -49,9 +49,16 @@ namespace SpectrographWPF.Manager
 
         public byte[] Update(string data = "@c0080#@")
         {
-            DiscardInBuffer();
-            DiscardOutBuffer();
-            Write(data);
+            try
+            {
+                DiscardInBuffer();
+                DiscardOutBuffer();
+                Write(data);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Write Error");
+            }
 
             var num = _isVirtual ? 21262 : 21142;
             var buffer = new byte[num];

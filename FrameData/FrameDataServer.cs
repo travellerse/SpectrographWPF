@@ -15,6 +15,8 @@ namespace SpectrographWPF.FrameData
         private static readonly FrameDataProducer Producer = new(_channel.Writer);
         private static readonly FrameDataConsumer Consumer = new(_channel.Reader);
 
+        public static bool bufferUsed = false;
+
         private FrameDataServer() { }
 
         public static FrameDataServer Instance
@@ -43,6 +45,7 @@ namespace SpectrographWPF.FrameData
             IsRunning = false;
             Producer.IsRunning = false;
             Consumer.IsRunning = false;
+            Thread.Sleep(10);
             _channel.Reader.ReadAllAsync();
         }
     }
@@ -63,10 +66,15 @@ namespace SpectrographWPF.FrameData
         {
             while (IsRunning)
             {
+                while (!FrameDataServer.bufferUsed)
+                {
+                    Thread.Sleep(1);
+                }
                 var rawData = _portManager.Update();
                 var frameData = new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
                 await _writer.WriteAsync(frameData);
-                Thread.Sleep(150);
+                FrameDataServer.bufferUsed = false;
+                //Thread.Sleep(150);
             }
         }
     }
@@ -85,8 +93,13 @@ namespace SpectrographWPF.FrameData
             if (DPlotUpdate == null) throw new Exception("delegate is null!");
             while (IsRunning)
             {
+                while (FrameDataServer.bufferUsed)
+                {
+                    Thread.Sleep(1);
+                }
                 await Application.Current.Dispatcher.BeginInvoke(async () => DPlotUpdate(await _reader.ReadAsync()));
-                Thread.Sleep(10);
+                //Thread.Sleep(10);
+                FrameDataServer.bufferUsed = true;
             }
         }
 

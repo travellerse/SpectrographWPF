@@ -67,8 +67,6 @@ namespace SpectrographWPF
 
         }
 
-        public int LoseFrameCount = 0;
-
         public void DataUpdate()
         {
             var sw = Stopwatch.StartNew();
@@ -81,62 +79,28 @@ namespace SpectrographWPF
             }
             catch (Exception e)
             {
-                LoseFrameCount++;
                 Alert(e.ToString());
                 return;
             }
 
-            var data = Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8);
+            var data = new LightFrameData(new FrameData.FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), isVirtualSerial));
 
-            PlotUpdate(data, isVirtualSerial);
+            PlotUpdate(data);
 
             sw.Stop();
             var time = Math.Round(sw.ElapsedTicks / (decimal)Stopwatch.Frequency, 6);
-            var maxData = isVirtualSerial ? "63785" : "63425";
             Information(
-                $"数据长度:{data.Length}/{maxData}   用时:{time}   Max FPS:{Math.Round(1 / time, 2)}   丢帧:{LoseFrameCount}");
+                $"用时:{time}   Max FPS:{Math.Round(1 / time, 2)}");
         }
 
-        public void PlotUpdate(string data, bool isVirtualSerial)
-        {
-            FrameData.FrameData frameData = new(data, isVirtualSerial);
-            LightFrameData lightFrameData = new(frameData);
-
-
-            plot.Plot.Clear();
-
-
-            var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
-            foreach (var bar in barsPlot.Bars)
-            {
-                bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) /
-                                              lightFrameData.WaveLength.Length);
-                bar.FillColor = Conversion.RgbCalculator.Calc(bar.Position);
-                bar.BorderColor = Conversion.RgbCalculator.Calc(bar.Position);
-            }
-            //plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Ss);
-
-            if ((bool)autoPeakingCheckBox.IsChecked)
-            {
-                var peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
-                for (int i = 0; i < peaks.Length; i++)
-                {
-                    var line = plot.Plot.Add.VerticalLine(peaks[i].Index);
-                    line.LinePattern = LinePattern.Dashed;
-                }
-            }
-
-            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400,
-                lightFrameData.Value.Max() + 1);
-            plot.Refresh();
-        }
-
-
+        public int frameCount = 0;
         public void PlotUpdate(LightFrameData lightFrameData)
         {
             plot.Plot.Clear();
 
-            var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
+            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Value);
+
+            /*var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
             int index = 0;
             foreach (var bar in barsPlot.Bars)
             {
@@ -144,7 +108,7 @@ namespace SpectrographWPF
                 bar.FillColor = lightFrameData.Color[index];
                 bar.BorderColor = lightFrameData.Color[index++];
             }
-
+            */
             if ((bool)autoPeakingCheckBox.IsChecked)
             {
                 var peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
@@ -152,11 +116,15 @@ namespace SpectrographWPF
                 {
                     var line = plot.Plot.Add.VerticalLine(peak.Index);
                     line.LinePattern = LinePattern.Dashed;
+                    line.Text = peak.Index.ToString();
                 }
             }
 
-            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 400, lightFrameData.Value.Max() + 1);
+            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 600, 5000);
             plot.Refresh();
+
+            frameCount++;
+
             Information($"延迟:{DateTimeOffset.Now.ToUnixTimeMilliseconds() - lightFrameData.Timestamp}ms");
         }
 
@@ -174,7 +142,6 @@ namespace SpectrographWPF
                     startWorkButton.Content = "停止";
                     FpsComboBox.IsEnabled = false;
                     sendDataButton.IsEnabled = false;
-                    LoseFrameCount = 0;
                     FrameDataServer.Start();
 
                 }
