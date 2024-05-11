@@ -8,9 +8,13 @@ namespace SpectrographWPF.Utils.Algorithm
         private int m;//窗口半宽度
         private double HL;
         private double HG;
+
+        private int threshold;
+        private int percent;
+
         private double d;
 
-        public SymmetricZeroAreaPeaking(int W, int HL, int HG)
+        public SymmetricZeroAreaPeaking(int W = 300, int HL = 100, int HG = 200, int percent = 70, int threshold = 75)
         {
             this.W = W;
             this.HL = HL;
@@ -21,6 +25,8 @@ namespace SpectrographWPF.Utils.Algorithm
                 d += G(i);
             }
             d /= W;
+            this.percent = percent;
+            this.threshold = threshold;
         }
 
         public double WindowFunction(double j)
@@ -63,17 +69,16 @@ namespace SpectrographWPF.Utils.Algorithm
             }
 
             var IMax = data.Value.Max();
-            var p = 70;
             var SSMax = Ss.Max();
 
             for (int i = m; i < n - m; i++)
             {
-                Score[i] = p * Ss[i] / SSMax + (100 - p) * data.Value[i] / IMax;
+                Score[i] = percent * Ss[i] / SSMax + (100 - percent) * data.Value[i] / IMax;
             }
             //求Score极值
             for (int i = m + 1; i < n - m - 1; i++)
             {
-                if (Score[i] >= Score[i - 1] && Score[i] >= Score[i + 1] && Score[i] >= 75)
+                if (Score[i] >= Score[i - 1] && Score[i] >= Score[i + 1] && Score[i] >= threshold)
                 {
                     temp[num++] = i;
                 }

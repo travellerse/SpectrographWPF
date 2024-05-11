@@ -72,18 +72,27 @@ namespace SpectrographWPF
             var sw = Stopwatch.StartNew();
             sw.Start();
             var isVirtualSerial = virtualSerialComboBox.Text == "True";
-            var rawData = serialPortManager.Update(sendDataTextBox.Text);
-            try
+            LightFrameData data;
+            if (IsDebug)
             {
-                //rawData = serialPortManager.Update(isVirtualSerial, sendDataTextBox.Text);
+                data = new LightFrameData(new FrameData.FrameData());
             }
-            catch (Exception e)
+            else
             {
-                Alert(e.ToString());
-                return;
+                byte[] rawData;
+                try
+                {
+                    rawData = serialPortManager.Update(sendDataTextBox.Text);
+                }
+                catch (Exception e)
+                {
+                    Alert(e.ToString());
+                    return;
+                }
+
+                data = new LightFrameData(new FrameData.FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), isVirtualSerial));
             }
 
-            var data = new LightFrameData(new FrameData.FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), isVirtualSerial));
 
             PlotUpdate(data);
 
@@ -97,18 +106,22 @@ namespace SpectrographWPF
         public void PlotUpdate(LightFrameData lightFrameData)
         {
             plot.Plot.Clear();
-
-            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Value);
-
-            /*var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
-            int index = 0;
-            foreach (var bar in barsPlot.Bars)
+            if ((bool)colorCheckBox.IsChecked)
             {
-                bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) / lightFrameData.WaveLength.Length);
-                bar.FillColor = lightFrameData.Color[index];
-                bar.BorderColor = lightFrameData.Color[index++];
+                var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
+                int index = 0;
+                foreach (var bar in barsPlot.Bars)
+                {
+                    bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) / lightFrameData.WaveLength.Length);
+                    bar.FillColor = lightFrameData.Color[index];
+                    bar.BorderColor = lightFrameData.Color[index++];
+                }
             }
-            */
+            else
+            {
+                plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Value);
+            }
+
             if ((bool)autoPeakingCheckBox.IsChecked)
             {
                 var peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
@@ -116,7 +129,9 @@ namespace SpectrographWPF
                 {
                     var line = plot.Plot.Add.VerticalLine(peak.Index);
                     line.LinePattern = LinePattern.Dashed;
-                    line.Text = peak.Index.ToString();
+                    line.Text = Math.Round(peak.Index, 2).ToString();
+                    line.LabelOppositeAxis = true;
+                    line.ExcludeFromLegend = true;
                 }
             }
 
@@ -135,7 +150,7 @@ namespace SpectrographWPF
 
         public void StartWorkButton_Click(object sender, RoutedEventArgs e)
         {
-            if (serialPortManager.IsOpen())
+            if (serialPortManager.IsOpen() || IsDebug)
             {
                 if (!FrameDataServer.IsRunning)
                 {

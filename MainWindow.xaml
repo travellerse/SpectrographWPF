@@ -17,15 +17,14 @@
             </MenuItem>
 
             <MenuItem Header="设置(_S)">
+                <MenuItem Name="debugMenuItem" Click="DebugMenuItem_OnClick" Header="打开调试" IsChecked="False" ></MenuItem>
             </MenuItem>
 
             <MenuItem Header="视图(_V)">
-                <MenuItem Name="recvDataMenuItem" Click="RecvDataMenuItem_OnClick" Header="接受区" IsChecked="True" ></MenuItem>
             </MenuItem>
 
             <MenuItem Header="帮助(_H)">
                 <MenuItem Name="aboutMenuItem" Header="关于(_A)" ></MenuItem>
-                <MenuItem Name="helpMenuItem" Header="软件文档(_D)"></MenuItem>
             </MenuItem>
         </Menu>
         <!--状态栏-->
@@ -198,6 +197,15 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="自动寻峰" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
                                     <CheckBox Name="autoPeakingCheckBox" Grid.Column="1" Margin="60,0,0,0"></CheckBox>
+                                </Grid>
+                                <!--赋色-->
+                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="赋色" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
+                                    <CheckBox Name="colorCheckBox" Grid.Column="1" Margin="60,0,0,0"></CheckBox>
                                 </Grid>
                             </DockPanel>
                         </GroupBox>

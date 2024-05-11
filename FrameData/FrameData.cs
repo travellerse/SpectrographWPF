@@ -40,6 +40,18 @@
             //SmoothData();
         }
 
+        public FrameData()
+        {
+            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            IsVirtual = true;
+            var random = new Random();
+            for (var i = 0; i < Amplitude.Length; i++)
+            {
+                Amplitude[i] = random.Next(600, 700);
+                //Amplitude[i] += (-8.625e-5 * Math.Pow(i - 5275, 2) + 2400);
+            }
+        }
+
         private void SmoothData()
         {
             var n = Amplitude.Length;

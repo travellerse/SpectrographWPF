@@ -12,7 +12,7 @@ namespace SpectrographWPF.FrameData
         private static readonly Channel<LightFrameData> _channel = Channel.CreateBounded<LightFrameData>(1);
         public static bool IsRunning { get; private set; }
 
-        private static readonly FrameDataProducer Producer = new(_channel.Writer);
+        public static readonly FrameDataProducer Producer = new(_channel.Writer);
         private static readonly FrameDataConsumer Consumer = new(_channel.Reader);
 
         public static bool bufferUsed = false;
@@ -61,6 +61,7 @@ namespace SpectrographWPF.FrameData
         }
 
         public bool IsRunning { get; set; }
+        public bool IsDebug { get; set; }
 
         public async Task Produce()
         {
@@ -70,8 +71,7 @@ namespace SpectrographWPF.FrameData
                 {
                     Thread.Sleep(1);
                 }
-                var rawData = _portManager.Update();
-                var frameData = new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
+                var frameData = IsDebug ? new LightFrameData(new FrameData()) : new LightFrameData(new FrameData(Conversion.ToSpecifiedText(_portManager.Update(), Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
                 await _writer.WriteAsync(frameData);
                 FrameDataServer.bufferUsed = false;
                 //Thread.Sleep(150);
