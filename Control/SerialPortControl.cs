@@ -105,6 +105,7 @@ namespace SpectrographWPF
         public int frameCount = 0;
         public void PlotUpdate(LightFrameData lightFrameData)
         {
+            var beforeRefresh = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             plot.Plot.Clear();
             if ((bool)colorCheckBox.IsChecked)
             {
@@ -124,7 +125,7 @@ namespace SpectrographWPF
 
             if ((bool)autoPeakingCheckBox.IsChecked)
             {
-                var peaks = new SymmetricZeroAreaPeaking(300, 100, 200).Apply(lightFrameData);
+                var peaks = new SymmetricZeroAreaPeaking().Apply(lightFrameData);
                 foreach (var peak in peaks)
                 {
                     var line = plot.Plot.Add.VerticalLine(peak.Index);
@@ -139,8 +140,8 @@ namespace SpectrographWPF
             plot.Refresh();
 
             frameCount++;
-
-            Information($"延迟:{DateTimeOffset.Now.ToUnixTimeMilliseconds() - lightFrameData.Timestamp}ms");
+            var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            Information($"数据延迟:{beforeRefresh - lightFrameData.Timestamp}ms  渲染延迟:{now - beforeRefresh}ms");
         }
 
         public void SendDataButton_Click(object sender, RoutedEventArgs e)
@@ -158,7 +159,6 @@ namespace SpectrographWPF
                     FpsComboBox.IsEnabled = false;
                     sendDataButton.IsEnabled = false;
                     FrameDataServer.Start();
-
                 }
                 else
                 {
@@ -166,7 +166,6 @@ namespace SpectrographWPF
                     FpsComboBox.IsEnabled = true;
                     sendDataButton.IsEnabled = true;
                     FrameDataServer.Stop();
-
                 }
             }
             else
