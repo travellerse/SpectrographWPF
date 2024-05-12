@@ -79,20 +79,13 @@ namespace SpectrographWPF
             }
             else
             {
-                byte[] rawData;
-                try
+                byte[]? rawData;
+                do
                 {
                     rawData = serialPortManager.Update(sendDataTextBox.Text);
-                }
-                catch (Exception e)
-                {
-                    Alert(e.ToString());
-                    return;
-                }
-
+                } while (rawData == null);
                 data = new LightFrameData(new FrameData.FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), isVirtualSerial));
             }
-
 
             PlotUpdate(data);
 
@@ -102,12 +95,25 @@ namespace SpectrographWPF
                 $"用时:{time}   Max FPS:{Math.Round(1 / time, 2)}");
         }
 
+        public LightFrameData LastLightFrameData;
+
         public int frameCount = 0;
+
         public void PlotUpdate(LightFrameData lightFrameData)
         {
             var beforeRefresh = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             plot.Plot.Clear();
-            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Value);
+            LastLightFrameData = lightFrameData;
+            var Value = new double[lightFrameData.Value.Length];
+            if (lightFrameData.frame > 1)
+            {
+                for (int i = 0; i < Value.Length; i++)
+                {
+                    Value[i] = lightFrameData.Value[i] / lightFrameData.frame;
+                }
+            }
+            else Value = lightFrameData.Value;
+            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Value);
             if ((bool)colorCheckBox.IsChecked)
             {
                 var points = new Coordinates[lightFrameData.WaveLength.Length + 2];
@@ -115,7 +121,7 @@ namespace SpectrographWPF
                 points[0] = new Coordinates(lightFrameData.WaveLength.First(), 0);
                 for (int i = 1; i <= lightFrameData.WaveLength.Length; ++i)
                 {
-                    points[i] = new Coordinates(lightFrameData.WaveLength[i - 1], lightFrameData.Value[i - 1]);
+                    points[i] = new Coordinates(lightFrameData.WaveLength[i - 1], Value[i - 1]);
                 }
                 points[lightFrameData.WaveLength.Length + 1] = new Coordinates(lightFrameData.WaveLength.Last(), 0);
 
@@ -140,12 +146,13 @@ namespace SpectrographWPF
                 }
             }
 
-            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 600, 5000);
+            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 0, 4500);
             plot.Refresh();
 
             frameCount++;
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            Information($"数据延迟:{beforeRefresh - lightFrameData.Timestamp}ms  渲染延迟:{now - beforeRefresh}ms");
+            if (lightFrameData.frame > 1) Information($"数据延迟:{beforeRefresh - lightFrameData.Timestamp}ms  渲染延迟:{now - beforeRefresh}ms  累计帧数:{lightFrameData.frame}");
+            else Information($"数据延迟:{beforeRefresh - lightFrameData.Timestamp}ms  渲染延迟:{now - beforeRefresh}ms");
         }
 
         public void SendDataButton_Click(object sender, RoutedEventArgs e)
@@ -162,6 +169,9 @@ namespace SpectrographWPF
                     startWorkButton.Content = "停止";
                     FpsComboBox.IsEnabled = false;
                     sendDataButton.IsEnabled = false;
+                    IntCheckBox.IsEnabled = false;
+                    if ((bool)IntCheckBox.IsChecked) FrameDataServer.Producer.IsInt = true;
+                    else FrameDataServer.Producer.IsInt = false;
                     FrameDataServer.Start();
                 }
                 else
@@ -169,6 +179,7 @@ namespace SpectrographWPF
                     startWorkButton.Content = "开始";
                     FpsComboBox.IsEnabled = true;
                     sendDataButton.IsEnabled = true;
+                    IntCheckBox.IsEnabled = true;
                     FrameDataServer.Stop();
                 }
             }
@@ -177,5 +188,7 @@ namespace SpectrographWPF
                 Alert("Oops，端口未打开；请打开端口后再试。");
             }
         }
+
+
     }
 }

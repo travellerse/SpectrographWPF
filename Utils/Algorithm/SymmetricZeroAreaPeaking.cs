@@ -15,6 +15,7 @@ namespace SpectrographWPF.Utils.Algorithm
         private double Voigt_k = 0.5;
         private double d;
         private double[] g;
+        private const double PI = Math.PI;
 
         public SymmetricZeroAreaPeaking(int W = 300, int HL = 100, int HG = 200, int percent = 70, int threshold = 75)
         {
@@ -35,7 +36,7 @@ namespace SpectrographWPF.Utils.Algorithm
 
         public double WindowFunction(int j) => g[j + m] - d;
 
-        public double G(double i) => 2 * Voigt_k * HL / (4 * i * i + HL * HL) / Math.PI + (1 - Voigt_k) * Math.Sqrt(4 * Math.Log(2)) / Math.Sqrt(Math.PI) / HG * Math.Exp(-4 * Math.Log(2) * i * i / HG / HG);
+        public double G(double i) => 2 * Voigt_k * HL / (4 * i * i + HL * HL) / PI + (1 - Voigt_k) * Math.Sqrt(4 * Math.Log(2)) / Math.Sqrt(PI) / HG * Math.Exp(-4 * Math.Log(2) * i * i / HG / HG);
 
         public PeakData[] Apply(LightFrameData data)
         {

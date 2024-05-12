@@ -33,6 +33,7 @@ namespace SpectrographWPF.FrameData
 
         public static void Start()
         {
+            Producer.intLightFrameData = null;
             var pTask = Task.Run(() => Producer.Produce());
             var cTask = Task.Run(() => Consumer.Consume());
             IsRunning = true;
@@ -50,18 +51,16 @@ namespace SpectrographWPF.FrameData
         }
     }
 
-    public class FrameDataProducer
+    public class FrameDataProducer(ChannelWriter<LightFrameData> writer)
     {
-        private readonly ChannelWriter<LightFrameData> _writer;
-        private readonly SerialPortManager _portManager;
-        public FrameDataProducer(ChannelWriter<LightFrameData> writer)
-        {
-            _portManager = SerialPortManager.Instance;
-            _writer = writer;
-        }
+        private readonly ChannelWriter<LightFrameData> _writer = writer;
+        private readonly SerialPortManager _portManager = SerialPortManager.Instance;
 
         public bool IsRunning { get; set; }
         public bool IsDebug { get; set; }
+        public bool IsInt { get; set; }
+
+        public LightFrameData? intLightFrameData;
 
         public async Task Produce()
         {
@@ -71,10 +70,32 @@ namespace SpectrographWPF.FrameData
                 {
                     Thread.Sleep(1);
                 }
-                var frameData = IsDebug ? new LightFrameData(new FrameData()) : new LightFrameData(new FrameData(Conversion.ToSpecifiedText(_portManager.Update(), Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
-                await _writer.WriteAsync(frameData);
+
+                byte[]? rawData;
+                do
+                {
+                    rawData = _portManager.Update();
+                } while (rawData == null);
+
+                var frameData = IsDebug ? new LightFrameData(new FrameData()) : new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
+                if (IsInt)
+                {
+                    if (intLightFrameData == null)
+                    {
+                        intLightFrameData = frameData;
+                    }
+                    else
+                    {
+                        intLightFrameData.Integral(frameData);
+                    }
+                    await _writer.WriteAsync(intLightFrameData);
+                }
+                else
+                {
+                    await _writer.WriteAsync(frameData);
+                }
+
                 FrameDataServer.bufferUsed = false;
-                //Thread.Sleep(150);
             }
         }
     }
@@ -98,7 +119,6 @@ namespace SpectrographWPF.FrameData
                     Thread.Sleep(1);
                 }
                 await Application.Current.Dispatcher.BeginInvoke(async () => DPlotUpdate(await _reader.ReadAsync()));
-                //Thread.Sleep(10);
                 FrameDataServer.bufferUsed = true;
             }
         }

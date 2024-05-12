@@ -14,6 +14,7 @@
         <!--菜单栏-->
         <Menu DockPanel.Dock="Top" Name="menuBar" Padding="2">
             <MenuItem Header="文件(_F)">
+                <MenuItem Name="dataExport" Click="DataExport_OnClick" Header="导出数据"></MenuItem>
             </MenuItem>
 
             <MenuItem Header="设置(_S)">
@@ -197,7 +198,7 @@
                                         <ColumnDefinition Width="10*"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="自动寻峰" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
-                                    <CheckBox Name="autoPeakingCheckBox" Grid.Column="1" Margin="60,0,0,0"></CheckBox>
+                                    <CheckBox Name="autoPeakingCheckBox" IsChecked="True" Grid.Column="1" Margin="60,0,0,0"></CheckBox>
                                 </Grid>
                                 <!--赋色-->
                                 <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
@@ -251,6 +252,8 @@
                                 <ColumnDefinition Width="90*"></ColumnDefinition>
                                 <ColumnDefinition Width="30"></ColumnDefinition>
                                 <ColumnDefinition Width="60"></ColumnDefinition>
+                                <ColumnDefinition Width="40"></ColumnDefinition>
+                                <ColumnDefinition Width="30"></ColumnDefinition>
                                 <ColumnDefinition Width="80"></ColumnDefinition>
                                 <ColumnDefinition Width="80"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
@@ -265,8 +268,10 @@
                                 <ComboBoxItem IsSelected="True">12</ComboBoxItem>
                                 <ComboBoxItem>24</ComboBoxItem>
                             </ComboBox>
-                            <Button Name="sendDataButton" Click="SendDataButton_Click" IsEnabled="False" VerticalAlignment="Center" Grid.Column="3" Padding="3" Content="单次" Margin="5,0"></Button>
-                            <Button Name="startWorkButton" Click="StartWorkButton_Click" IsEnabled="False" VerticalAlignment="Center" Grid.Column="4" Padding="3" Content="开始" Margin="5,0"></Button>
+                            <TextBlock Text="积分" VerticalAlignment="Center" Grid.Column="3" Padding="5"></TextBlock>
+                            <CheckBox Name="IntCheckBox" VerticalAlignment="Center" Grid.Column="4" Padding="5"></CheckBox>
+                            <Button Name="sendDataButton" Click="SendDataButton_Click" IsEnabled="False" VerticalAlignment="Center" Grid.Column="5" Padding="3" Content="单次" Margin="5,0"></Button>
+                            <Button Name="startWorkButton" Click="StartWorkButton_Click" IsEnabled="False" VerticalAlignment="Center" Grid.Column="6" Padding="3" Content="开始" Margin="5,0"></Button>
                             <Grid></Grid>
                         </Grid>
                     </GroupBox>

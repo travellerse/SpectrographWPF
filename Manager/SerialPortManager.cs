@@ -47,7 +47,7 @@ namespace SpectrographWPF.Manager
 
         public static string[] FindPort() => SerialPort.GetPortNames();
 
-        public byte[] Update(string data = "@c0080#@")
+        public byte[]? Update(string data = "@c0080#@")
         {
             try
             {
@@ -76,7 +76,8 @@ namespace SpectrographWPF.Manager
                 {
                     if (++loopCount > 200)
                     {
-                        throw new Exception("Read Error");
+                        return null;
+                        //throw new Exception("Read Error");
                     }
                 }
                 lastN = n;

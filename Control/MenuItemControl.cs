@@ -1,4 +1,6 @@
-﻿using SpectrographWPF.FrameData;
+﻿using System.IO;
+using Microsoft.Win32;
+using SpectrographWPF.FrameData;
 using System.Windows;
 
 namespace SpectrographWPF
@@ -25,6 +27,18 @@ namespace SpectrographWPF
                     sendDataButton.IsEnabled = false;
                 }
                 FrameDataServer.Producer.IsDebug = false;
+            }
+        }
+
+        private void DataExport_OnClick(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.FileName = "SpectrographData";
+            dlg.DefaultExt = ".txt";
+            dlg.Filter = "Text documents (.txt)|*.txt";
+            if (dlg.ShowDialog() == true)
+            {
+                File.WriteAllText(dlg.FileName, LastLightFrameData.ToString());
             }
         }
     }
