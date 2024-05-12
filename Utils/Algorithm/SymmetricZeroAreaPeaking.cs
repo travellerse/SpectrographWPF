@@ -12,7 +12,9 @@ namespace SpectrographWPF.Utils.Algorithm
         private int threshold;
         private int percent;
 
+        private double Voigt_k = 0.5;
         private double d;
+        private double[] g;
 
         public SymmetricZeroAreaPeaking(int W = 300, int HL = 100, int HG = 200, int percent = 70, int threshold = 75)
         {
@@ -20,26 +22,20 @@ namespace SpectrographWPF.Utils.Algorithm
             this.HL = HL;
             this.HG = HG;
             m = W / 2;
+            g = new double[W + 1];
             for (int i = -m; i <= m; ++i)
             {
-                d += G(i);
+                g[i + m] = G(i);
+                d += g[i + m];
             }
             d /= W;
             this.percent = percent;
             this.threshold = threshold;
         }
 
-        public double WindowFunction(double j)
-        {
-            return G(j) - d;
-        }
+        public double WindowFunction(int j) => g[j + m] - d;
 
-        public double G(double i)
-        //Voigt
-        {
-            double k = 0.5;
-            return 2 * k * HL / (4 * i * i + HL * HL) / Math.PI + (1 - k) * Math.Sqrt(4 * Math.Log(2)) / Math.Sqrt(Math.PI) / HG * Math.Exp(-4 * Math.Log(2) * i * i / HG / HG);
-        }
+        public double G(double i) => 2 * Voigt_k * HL / (4 * i * i + HL * HL) / Math.PI + (1 - Voigt_k) * Math.Sqrt(4 * Math.Log(2)) / Math.Sqrt(Math.PI) / HG * Math.Exp(-4 * Math.Log(2) * i * i / HG / HG);
 
         public PeakData[] Apply(LightFrameData data)
         {
@@ -61,7 +57,7 @@ namespace SpectrographWPF.Utils.Algorithm
                 {
                     double C = WindowFunction(j);
                     sumY += data.Value[i + j] * C;
-                    sumdeltaY += data.Value[i + j] * Math.Pow(C, 2);
+                    sumdeltaY += data.Value[i + j] * C * C;
                 }
                 Y[i] = sumY;
                 deltaY[i] = sumdeltaY;
