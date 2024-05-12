@@ -107,20 +107,24 @@ namespace SpectrographWPF
         {
             var beforeRefresh = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             plot.Plot.Clear();
+            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Value);
             if ((bool)colorCheckBox.IsChecked)
             {
-                var barsPlot = plot.Plot.Add.Bars(lightFrameData.WaveLength, lightFrameData.Value);
-                int index = 0;
-                foreach (var bar in barsPlot.Bars)
+                var points = new Coordinates[lightFrameData.WaveLength.Length + 2];
+
+                points[0] = new Coordinates(lightFrameData.WaveLength.First(), 0);
+                for (int i = 1; i <= lightFrameData.WaveLength.Length; ++i)
                 {
-                    bar.BorderLineWidth = (float)((lightFrameData.WaveLength.Max() - lightFrameData.WaveLength.Min()) / lightFrameData.WaveLength.Length);
-                    bar.FillColor = lightFrameData.Color[index];
-                    bar.BorderColor = lightFrameData.Color[index++];
+                    points[i] = new Coordinates(lightFrameData.WaveLength[i - 1], lightFrameData.Value[i - 1]);
                 }
-            }
-            else
-            {
-                plot.Plot.Add.SignalXY(lightFrameData.WaveLength, lightFrameData.Value);
+                points[lightFrameData.WaveLength.Length + 1] = new Coordinates(lightFrameData.WaveLength.Last(), 0);
+
+                var polygon = plot.Plot.Add.Polygon(points);
+                polygon.FillHatch = new Gradient
+                {
+                    Colors = lightFrameData.Color
+                };
+                polygon.LineWidth = 0;
             }
 
             if ((bool)autoPeakingCheckBox.IsChecked)
