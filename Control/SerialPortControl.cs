@@ -97,6 +97,8 @@ namespace SpectrographWPF
 
         public LightFrameData LastLightFrameData;
 
+        public LightFrameData DarkFieldData;
+
         public int frameCount = 0;
 
         public void PlotUpdate(LightFrameData lightFrameData)
@@ -188,7 +190,5 @@ namespace SpectrographWPF
                 Alert("Oops，端口未打开；请打开端口后再试。");
             }
         }
-
-
     }
 }

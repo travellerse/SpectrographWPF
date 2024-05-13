@@ -29,6 +29,18 @@ namespace SpectrographWPF.FrameData
             }
         }
 
+        public LightFrameData(double[] waveLength, double[] value, int frame)
+        {
+            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            this.frame = frame;
+            WaveLength = waveLength;
+            Value = value;
+            for (int i = 0; i < 10550; i++)
+            {
+                Color[i] = Conversion.RgbCalculator.Calc(WaveLength[i]);
+            }
+        }
+
         private double TransLam(double x)
         {
             return 1 / m * (Math.Cos(DegToRad(eta)) - Math.Sin(DegToRad(eta + 14)) * F / Math.Sqrt(x * x + F * F) + Math.Cos(DegToRad(eta + 14)) * x / Math.Sqrt(x * x + F * F)) * 1e6;

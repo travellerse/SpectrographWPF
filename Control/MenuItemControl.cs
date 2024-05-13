@@ -1,6 +1,6 @@
-﻿using System.IO;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using SpectrographWPF.FrameData;
+using System.IO;
 using System.Windows;
 
 namespace SpectrographWPF
@@ -32,13 +32,48 @@ namespace SpectrographWPF
 
         private void DataExport_OnClick(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.FileName = "SpectrographData";
-            dlg.DefaultExt = ".txt";
-            dlg.Filter = "Text documents (.txt)|*.txt";
+            SaveFileDialog dlg = new()
+            {
+                FileName = "SpectrographData",
+                DefaultExt = ".txt",
+                Filter = "Text documents (.txt)|*.txt"
+            };
             if (dlg.ShowDialog() == true)
             {
                 File.WriteAllText(dlg.FileName, LastLightFrameData.ToString());
+            }
+        }
+
+        private void DarkFieldDataImport_OnClick(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new()
+            {
+                DefaultExt = ".txt",
+                Filter = "Text documents (.txt)|*.txt"
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                try
+                {
+                    var reader = new StreamReader(dlg.FileName);
+                    string line = reader.ReadLine();
+                    var waveLength = new double[10550];
+                    var value = new double[10550];
+                    for (int i = 0; i < 10550; i++)
+                    {
+                        line = reader.ReadLine();
+                        waveLength[i] = double.Parse(line.Split(',')[0]);
+                        value[i] = double.Parse(line.Split(',')[1]);
+                    }
+                    DarkFieldData = new LightFrameData(waveLength, value, 1);
+                    reader.Close();
+                    PlotUpdate(DarkFieldData);
+                }
+                catch (Exception)
+                {
+                    Alert("导入失败，请检查文件格式。");
+                    return;
+                }
             }
         }
     }
