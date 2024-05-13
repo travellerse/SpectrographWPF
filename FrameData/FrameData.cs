@@ -47,7 +47,7 @@
             var random = new Random();
             for (var i = 0; i < Amplitude.Length; i++)
             {
-                Amplitude[i] = random.Next(600, 700);
+                Amplitude[i] = random.Next(800, 820);
                 //Amplitude[i] += (-8.625e-5 * Math.Pow(i - 5275, 2) + 2400);
             }
         }

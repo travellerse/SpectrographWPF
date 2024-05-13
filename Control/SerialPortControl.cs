@@ -115,6 +115,15 @@ namespace SpectrographWPF
                 }
             }
             else Value = lightFrameData.Value;
+
+            if ((bool)DarkFieldCheckBox.IsChecked && DarkFieldData != null)
+            {
+                for (int i = 0; i < Value.Length; i++)
+                {
+                    Value[i] -= DarkFieldData.Value[i];
+                    if (Value[i] < 0) Value[i] = 0;
+                }
+            }
             plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Value);
             if ((bool)colorCheckBox.IsChecked)
             {
@@ -169,7 +178,7 @@ namespace SpectrographWPF
                 if (!FrameDataServer.IsRunning)
                 {
                     startWorkButton.Content = "停止";
-                    FpsComboBox.IsEnabled = false;
+                    //FpsComboBox.IsEnabled = false;
                     sendDataButton.IsEnabled = false;
                     IntCheckBox.IsEnabled = false;
                     if ((bool)IntCheckBox.IsChecked) FrameDataServer.Producer.IsInt = true;
@@ -179,7 +188,7 @@ namespace SpectrographWPF
                 else
                 {
                     startWorkButton.Content = "开始";
-                    FpsComboBox.IsEnabled = true;
+                    //FpsComboBox.IsEnabled = true;
                     sendDataButton.IsEnabled = true;
                     IntCheckBox.IsEnabled = true;
                     FrameDataServer.Stop();

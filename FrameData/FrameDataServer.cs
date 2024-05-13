@@ -71,13 +71,22 @@ namespace SpectrographWPF.FrameData
                     Thread.Sleep(1);
                 }
 
-                byte[]? rawData;
-                do
+                LightFrameData frameData;
+                if (IsDebug)
                 {
-                    rawData = _portManager.Update();
-                } while (rawData == null);
+                    frameData = new LightFrameData(new FrameData());
+                }
+                else
+                {
+                    byte[]? rawData;
+                    do
+                    {
+                        rawData = _portManager.Update();
+                    } while (rawData == null);
 
-                var frameData = IsDebug ? new LightFrameData(new FrameData()) : new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
+                    frameData = new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
+                }
+
                 if (IsInt)
                 {
                     if (intLightFrameData == null)

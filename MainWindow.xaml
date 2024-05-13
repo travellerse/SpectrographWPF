@@ -251,14 +251,17 @@
                         <Grid Margin="0,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="90*"></ColumnDefinition>
+                                <ColumnDefinition Width="40"></ColumnDefinition>
                                 <ColumnDefinition Width="30"></ColumnDefinition>
-                                <ColumnDefinition Width="60"></ColumnDefinition>
                                 <ColumnDefinition Width="40"></ColumnDefinition>
                                 <ColumnDefinition Width="30"></ColumnDefinition>
                                 <ColumnDefinition Width="80"></ColumnDefinition>
                                 <ColumnDefinition Width="80"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <TextBox Name="sendDataTextBox" FontFamily="Lucida Console" Grid.Column="0" VerticalAlignment="Center" Padding="5" Margin="5,0,0,0">@c0080#@</TextBox>
+                            <TextBlock Text="暗场" VerticalAlignment="Center" Grid.Column="1" Padding="5"></TextBlock>
+                            <CheckBox Name="DarkFieldCheckBox" VerticalAlignment="Center" Grid.Column="2" Padding="5"></CheckBox>
+                            <!--
                             <TextBlock Text=" FPS" VerticalAlignment="Center" Grid.Column="1"></TextBlock>
                             <ComboBox Name="FpsComboBox" Width="60" Grid.Column="2" IsEditable="True" Padding="5">
                                 <ComboBoxItem>1</ComboBoxItem>
@@ -269,6 +272,7 @@
                                 <ComboBoxItem IsSelected="True">12</ComboBoxItem>
                                 <ComboBoxItem>24</ComboBoxItem>
                             </ComboBox>
+                            -->
                             <TextBlock Text="积分" VerticalAlignment="Center" Grid.Column="3" Padding="5"></TextBlock>
                             <CheckBox Name="IntCheckBox" VerticalAlignment="Center" Grid.Column="4" Padding="5"></CheckBox>
                             <Button Name="sendDataButton" Click="SendDataButton_Click" IsEnabled="False" VerticalAlignment="Center" Grid.Column="5" Padding="3" Content="单次" Margin="5,0"></Button>
