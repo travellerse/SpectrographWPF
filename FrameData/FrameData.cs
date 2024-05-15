@@ -45,11 +45,16 @@
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             IsVirtual = true;
             var random = new Random();
+            int num = 12;
+            double lambda = Amplitude.Length / num;
             for (var i = 0; i < Amplitude.Length; i++)
             {
-                Amplitude[i] = random.Next(800, 820);
+                Amplitude[i] = random.Next(630, 650);
+                Amplitude[i] += 800 * Math.Sin(2 * Math.PI * i / lambda);
                 //Amplitude[i] += (-8.625e-5 * Math.Pow(i - 5275, 2) + 2400);
             }
+
+            SmoothData();
         }
 
         private void SmoothData()

@@ -17,7 +17,7 @@ namespace SpectrographWPF.Utils.Algorithm
         private double[] g;
         private const double PI = Math.PI;
 
-        public SymmetricZeroAreaPeaking(int W = 300, int HL = 100, int HG = 200, int percent = 70, int threshold = 75)
+        public SymmetricZeroAreaPeaking(int W = 300, int HL = 100, int HG = 200, int percent = 75, int threshold = 75)
         {
             this.W = W;
             this.HL = HL;

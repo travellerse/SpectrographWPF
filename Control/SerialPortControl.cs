@@ -96,6 +96,8 @@ namespace SpectrographWPF
         }
 
         public LightFrameData LastLightFrameData;
+        public bool peaking;
+        public bool color;
 
         public LightFrameData DarkFieldData;
 
@@ -125,7 +127,7 @@ namespace SpectrographWPF
                 }
             }
             plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Value);
-            if ((bool)colorCheckBox.IsChecked)
+            if ((bool)colorCheckBox.IsChecked || color)
             {
                 var points = new Coordinates[lightFrameData.WaveLength.Length + 2];
 
@@ -144,7 +146,7 @@ namespace SpectrographWPF
                 polygon.LineWidth = 0;
             }
 
-            if ((bool)autoPeakingCheckBox.IsChecked)
+            if ((bool)autoPeakingCheckBox.IsChecked || peaking)
             {
                 var peaks = new SymmetricZeroAreaPeaking().Apply(lightFrameData);
                 foreach (var peak in peaks)
@@ -168,6 +170,8 @@ namespace SpectrographWPF
 
         public void SendDataButton_Click(object sender, RoutedEventArgs e)
         {
+            peaking = false;
+            color = false;
             this.Dispatcher.BeginInvoke(new Action(DataUpdate));
         }
 
@@ -175,6 +179,8 @@ namespace SpectrographWPF
         {
             if (serialPortManager.IsOpen() || IsDebug)
             {
+                peaking = false;
+                color = false;
                 if (!FrameDataServer.IsRunning)
                 {
                     startWorkButton.Content = "停止";
@@ -198,6 +204,18 @@ namespace SpectrographWPF
             {
                 Alert("Oops，端口未打开；请打开端口后再试。");
             }
+        }
+
+        private void FindPeakButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            peaking = true;
+            PlotUpdate(LastLightFrameData);
+        }
+
+        private void ColorButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            color = true;
+            PlotUpdate(LastLightFrameData);
         }
     }
 }
