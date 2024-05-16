@@ -84,7 +84,7 @@ namespace SpectrographWPF.Utils.Algorithm
             peaks = new PeakData[num];
             for (int i = 0; i < num; ++i)
             {
-                peaks[i] = new PeakData(data.WaveLength[temp[i]], data.Value[temp[i]]);
+                peaks[i] = new PeakData(data.WaveLength[temp[i]], data.Value[temp[i]], Ss[i]);
             }
 
             return peaks;
