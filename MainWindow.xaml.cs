@@ -44,6 +44,8 @@ namespace SpectrographWPF
 
         public SerialPortManager serialPortManager = SerialPortManager.Instance;
 
+        public double deltax = 0;
+
 
         private void Information(string message)
         {

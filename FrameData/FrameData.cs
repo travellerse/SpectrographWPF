@@ -36,8 +36,7 @@
             {
                 Amplitude[i - PreDummy] = Convert.ToInt32(bytes[i * 2] + bytes[i * 2 + 1], 16);
             }
-
-            //SmoothData();
+            Amplitude = Utils.Algorithm.DataSmooth.Apply(Amplitude, 7);
         }
 
         public FrameData()
@@ -50,34 +49,12 @@
             for (var i = 0; i < Amplitude.Length; i++)
             {
                 Amplitude[i] = random.Next(630, 650);
-                Amplitude[i] += 800 * Math.Sin(2 * Math.PI * i / lambda);
+                Amplitude[i] += 600 * Math.Sin(2 * Math.PI * i / lambda);
                 //Amplitude[i] += (-8.625e-5 * Math.Pow(i - 5275, 2) + 2400);
             }
-
-            SmoothData();
         }
 
-        private void SmoothData()
-        {
-            var n = Amplitude.Length;
-            var temp = new double[n];
-            for (var i = 0; i < n; i++)
-            {
-                if (i < 3 || i > n - 4)
-                {
-                    temp[i] = Amplitude[i];
-                }
-                else
-                {
-                    temp[i] = (Amplitude[i - 3] + Amplitude[i - 2] + Amplitude[i - 1] + Amplitude[i] + Amplitude[i + 1] + Amplitude[i + 2] + Amplitude[i + 3]) / 7;
-                }
-            }
 
-            for (var i = 0; i < n; i++)
-            {
-                Amplitude[i] = temp[i];
-            }
-        }
 
 
     }

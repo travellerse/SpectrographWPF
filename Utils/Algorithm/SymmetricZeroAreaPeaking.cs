@@ -46,9 +46,8 @@ namespace SpectrographWPF.Utils.Algorithm
             var Ss = new double[n];
             var Score = new double[n];
 
-            var temp = new int[1024];
+            var temp = new List<int>();
             PeakData[] peaks;
-            var num = 0;
 
             for (int i = m; i < n - m; i++)
             {
@@ -73,6 +72,7 @@ namespace SpectrographWPF.Utils.Algorithm
                 Score[i] = percent * Ss[i] / SSMax + (100 - percent) * data.Value[i] / IMax;
             }
             //求Score极值
+            /*
             for (int i = m + 1; i < n - m - 1; i++)
             {
                 if (Score[i] >= Score[i - 1] && Score[i] >= Score[i + 1] && Score[i] >= threshold)
@@ -80,9 +80,10 @@ namespace SpectrographWPF.Utils.Algorithm
                     temp[num++] = i;
                 }
             }
-
-            peaks = new PeakData[num];
-            for (int i = 0; i < num; ++i)
+            */
+            temp = NonMaximumSuppression.Apply(DataSmooth.Apply(Score, 15));
+            peaks = new PeakData[temp.Count];
+            for (int i = 0; i < temp.Count; ++i)
             {
                 peaks[i] = new PeakData(data.WaveLength[temp[i]], data.Value[temp[i]], Ss[i]);
             }

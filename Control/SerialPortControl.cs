@@ -126,6 +126,11 @@ namespace SpectrographWPF
                     if (Value[i] < 0) Value[i] = 0;
                 }
             }
+
+            for (int i = 0; i < lightFrameData.WaveLength.Length; i++)
+            {
+                lightFrameData.WaveLength[i] = lightFrameData.WaveLength[i] - 20.8 * Convert.ToDouble(MicrometerTextBox.Text.Split("(")[0]) + 388 + Convert.ToDouble(deltaTextBox.Text);//466.99
+            }
             plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Value);
             if ((bool)colorCheckBox.IsChecked || color)
             {
