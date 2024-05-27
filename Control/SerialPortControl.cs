@@ -3,8 +3,10 @@ using SpectrographWPF.FrameData;
 using SpectrographWPF.Manager;
 using SpectrographWPF.Utils;
 using SpectrographWPF.Utils.Algorithm;
+using System;
 using System.Diagnostics;
 using System.Windows;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpectrographWPF
 {
@@ -105,6 +107,7 @@ namespace SpectrographWPF
 
         public void PlotUpdate(LightFrameData lightFrameData)
         {
+
             var beforeRefresh = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             plot.Plot.Clear();
             LastLightFrameData = lightFrameData;
@@ -153,7 +156,7 @@ namespace SpectrographWPF
 
             if ((bool)autoPeakingCheckBox.IsChecked || peaking)
             {
-                var peaks = new SymmetricZeroAreaPeaking().Apply(lightFrameData);
+                var peaks = new SymmetricZeroAreaPeaking(W: Convert.ToInt32(peakingWindowTextBox.Text), percent: Convert.ToDouble(peakingValueTextBox.Text)).Apply(lightFrameData);
                 foreach (var peak in peaks)
                 {
                     var line = plot.Plot.Add.VerticalLine(peak.Index);
@@ -167,10 +170,20 @@ namespace SpectrographWPF
             plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 0, 4500);
             plot.Refresh();
 
+            findPeakButton.IsEnabled = true;
+            colorButton.IsEnabled = true;
+            autoPeakingCheckBox.IsEnabled = true;
+            colorCheckBox.IsEnabled = true;
+
             frameCount++;
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            if (lightFrameData.frame > 1) Information($"数据延迟:{beforeRefresh - lightFrameData.Timestamp}ms  渲染延迟:{now - beforeRefresh}ms  累计帧数:{lightFrameData.frame}");
-            else Information($"数据延迟:{beforeRefresh - lightFrameData.Timestamp}ms  渲染延迟:{now - beforeRefresh}ms");
+            string data_delay = string.Format("{0,3}", beforeRefresh - lightFrameData.Timestamp);
+            string render_delay = string.Format("{0,3}", now - beforeRefresh);
+            string total_delay = string.Format("{0,3}", now - lightFrameData.Timestamp);
+            var info =
+                $"数据延迟:{data_delay}ms  渲染延迟:{render_delay}ms  总延迟:{total_delay}ms";
+            if (lightFrameData.frame > 1) info += $"  累计帧数:{lightFrameData.frame}";
+            Information(info);
         }
 
         public void SendDataButton_Click(object sender, RoutedEventArgs e)

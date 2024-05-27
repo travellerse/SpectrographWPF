@@ -198,23 +198,41 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="10*"></ColumnDefinition>
                                         <ColumnDefinition Width="60"></ColumnDefinition>
-                                        <ColumnDefinition Width="50"></ColumnDefinition>
+                                        <ColumnDefinition Width="60"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="自动寻峰" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
-                                    <Button Name="findPeakButton" Click="FindPeakButton_OnClick" VerticalAlignment="Center" Grid.Column="1" Content="寻峰" Margin="0,0,0,0"></Button>
-                                    <CheckBox Name="autoPeakingCheckBox" VerticalAlignment="Center" IsChecked="True" Grid.Column="2" Margin="20,0,0,0"></CheckBox>
-
+                                    <Button Name="findPeakButton" Click="FindPeakButton_OnClick" VerticalAlignment="Center" Grid.Column="1" IsEnabled="False" Content="寻峰" Margin="0,0,0,0"></Button>
+                                    <CheckBox Name="autoPeakingCheckBox" VerticalAlignment="Center" IsChecked="True" Grid.Column="2" IsEnabled="False" Margin="20,0,0,0"></CheckBox>
+                                </Grid>
+                                <!--寻峰参数-->
+                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="窗宽(整数)"  VerticalAlignment="Center" Grid.Column="0"></TextBlock>
+                                    <TextBox Name="peakingWindowTextBox" Width="120" Grid.Column="1" Text="300" Padding="5">
+                                    </TextBox>
+                                </Grid>
+                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="寻峰阈值(0-100)"  VerticalAlignment="Center" Grid.Column="0"></TextBlock>
+                                    <TextBox Name="peakingValueTextBox" Width="120" Grid.Column="1" Text="75" Padding="5">
+                                    </TextBox>
                                 </Grid>
                                 <!--赋色-->
                                 <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="10*"></ColumnDefinition>
                                         <ColumnDefinition Width="60"></ColumnDefinition>
-                                        <ColumnDefinition Width="50"></ColumnDefinition>
+                                        <ColumnDefinition Width="60"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="赋色" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
-                                    <Button Name="colorButton" Click="ColorButton_OnClick" VerticalAlignment="Center" Grid.Column="1" Content="赋色" Margin="0,0,0,0"></Button>
-                                    <CheckBox Name="colorCheckBox" VerticalAlignment="Center" IsChecked="True" Grid.Column="2" Margin="20,0,0,0"></CheckBox>
+                                    <Button Name="colorButton" Click="ColorButton_OnClick" VerticalAlignment="Center" Grid.Column="1" IsEnabled="False" Content="赋色" Margin="0,0,0,0"></Button>
+                                    <CheckBox Name="colorCheckBox" VerticalAlignment="Center" IsChecked="True" Grid.Column="2" IsEnabled="False" Margin="20,0,0,0"></CheckBox>
                                 </Grid>
                             </DockPanel>
                         </GroupBox>

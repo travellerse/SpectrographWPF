@@ -10,14 +10,14 @@ namespace SpectrographWPF.Utils.Algorithm
         private double HG;
 
         private int threshold;
-        private int percent;
+        public double percent;
 
         private double Voigt_k = 0.5;
         private double d;
         private double[] g;
         private const double PI = Math.PI;
 
-        public SymmetricZeroAreaPeaking(int W = 300, int HL = 100, int HG = 200, int percent = 75, int threshold = 75)
+        public SymmetricZeroAreaPeaking(int W = 300, int HL = 100, int HG = 200, double percent = 75, int threshold = 75)
         {
             this.W = W;
             this.HL = HL;
@@ -30,7 +30,10 @@ namespace SpectrographWPF.Utils.Algorithm
                 d += g[i + m];
             }
             d /= W;
-            this.percent = percent;
+            if (percent < 0) this.percent = 0;
+            else if (percent > 100) this.percent = 100;
+            else
+                this.percent = percent;
             this.threshold = threshold;
         }
 
