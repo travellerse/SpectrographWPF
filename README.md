@@ -13,5 +13,8 @@
 ## 2. 程序界面
 ![image](Images/gui.png)
 
+## 3. 需求
+- .NET 8.0
+
 > [!IMPORTANT]  
 > 目前没有使用MVVM模式，后续会进行重构(~~大概~~)
