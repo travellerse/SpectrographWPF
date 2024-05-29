@@ -11,6 +11,7 @@ namespace SpectrographWPF.FrameData
         private static readonly object Padlock = new();
         private static readonly Channel<LightFrameData> _channel = Channel.CreateBounded<LightFrameData>(1);
         public static bool IsRunning { get; private set; }
+        public static bool IsVirtual;
 
         public static readonly FrameDataProducer Producer = new(_channel.Writer);
         private static readonly FrameDataConsumer Consumer = new(_channel.Reader);
@@ -84,7 +85,7 @@ namespace SpectrographWPF.FrameData
                         rawData = _portManager.Update();
                     } while (rawData == null);
 
-                    frameData = new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), true));
+                    frameData = new LightFrameData(new FrameData(Conversion.ToSpecifiedText(rawData, Conversion.ConversionType.Hex, System.Text.Encoding.UTF8), FrameDataServer.IsVirtual));
                 }
 
                 if (IsInt)

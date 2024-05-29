@@ -1,4 +1,5 @@
 ﻿using System.IO.Ports;
+using SpectrographWPF.FrameData;
 
 namespace SpectrographWPF.Manager
 {
@@ -30,6 +31,7 @@ namespace SpectrographWPF.Manager
             _serialPort.DataBits = dataBits;
             _serialPort.StopBits = (StopBits)stopBits;
             _isVirtual = isVirtual;
+            FrameDataServer.IsVirtual = isVirtual;
             _serialPort.Open();
         }
 
