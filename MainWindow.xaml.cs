@@ -2,6 +2,7 @@
 using SpectrographWPF.Manager;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.VisualBasic;
 
 namespace SpectrographWPF
 {
@@ -20,7 +21,7 @@ namespace SpectrographWPF
         {
             FrameDataConsumer.DPlotUpdate = new FrameDataConsumer.PlotUpdateDelegate(PlotUpdate);
 
-            plot.Plot.Axes.SetLimits(1, 10550, 400, 700);
+            plot.Plot.Axes.SetLimits(400, 700, 0, 4000);
             //plot.Plot.XLabel("Pixel");
             //plot.Plot.YLabel("Amplitude");
             plot.Plot.Title("Spectrograph");
@@ -32,13 +33,13 @@ namespace SpectrographWPF
                 portsComboBox.ItemsSource = portList;
                 portsComboBox.SelectedIndex = 0;
                 portsComboBox.IsEnabled = true;
-                findPortButton.IsEnabled = true;
+                openClosePortButton.IsEnabled = true;
                 Information($"查找到可以使用的端口{portsComboBox.Items.Count}个。");
             }
             else
             {
                 Alert("Oops，没有查找到可用端口；您可以点击“查找”按钮手动查找。");
-                findPortButton.IsEnabled = false;
+                openClosePortButton.IsEnabled = false;
             }
         }
 
@@ -59,7 +60,9 @@ namespace SpectrographWPF
                 // #FF007ACC
                 statusBar.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0x00, 0x7A, 0xCC));
             }
-            statusInfoTextBlock.Text = message;
+
+            string time = "[" + DateAndTime.Now.ToLongTimeString() + "] ";
+            statusInfoTextBlock.Text = time + message;
         }
 
         private void Alert(string message)
@@ -68,7 +71,8 @@ namespace SpectrographWPF
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 statusBar.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0xFF, 0x21, 0x2A));
-                statusInfoTextBlock.Text = message;
+                string time = "[" + DateAndTime.Now.ToLongTimeString() + "] ";
+                statusInfoTextBlock.Text = time + message;
             }));
         }
     }

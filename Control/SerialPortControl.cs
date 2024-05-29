@@ -20,13 +20,13 @@ namespace SpectrographWPF
                 portsComboBox.ItemsSource = portList;
                 portsComboBox.SelectedIndex = 0;
                 portsComboBox.IsEnabled = true;
-                findPortButton.IsEnabled = true;
+                openClosePortButton.IsEnabled = true;
                 Information($"查找到可以使用的端口{portList.Length}个。");
             }
             else
             {
                 Alert("Oops，没有查找到可用端口；您可以点击“查找”按钮手动查找。");
-                findPortButton.IsEnabled = false;
+                openClosePortButton.IsEnabled = false;
             }
         }
 
@@ -132,7 +132,7 @@ namespace SpectrographWPF
 
             for (int i = 0; i < lightFrameData.WaveLength.Length; i++)
             {
-                lightFrameData.WaveLength[i] = lightFrameData.WaveLength[i] - 20.8 * Convert.ToDouble(MicrometerTextBox.Text.Split("(")[0]) + 388 + Convert.ToDouble(deltaTextBox.Text);//466.99
+                lightFrameData.WaveLength[i] += /* - 20.8 * Convert.ToDouble(MicrometerTextBox.Text.Split("(")[0]) + 388 + */ Convert.ToDouble(deltaTextBox.Text);//466.99
             }
             plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Value);
             if ((bool)colorCheckBox.IsChecked || color)
