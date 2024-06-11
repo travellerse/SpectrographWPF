@@ -6,6 +6,8 @@ using SpectrographWPF.Utils.Algorithm;
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpectrographWPF
@@ -130,21 +132,23 @@ namespace SpectrographWPF
                 }
             }
 
-            for (int i = 0; i < lightFrameData.WaveLength.Length; i++)
+            double[] WaveLength = lightFrameData.WaveLength;
+
+            for (int i = 0; i < WaveLength.Length; i++)
             {
-                lightFrameData.WaveLength[i] += /* - 20.8 * Convert.ToDouble(MicrometerTextBox.Text.Split("(")[0]) + 388 + */ Convert.ToDouble(deltaTextBox.Text);//466.99
+                WaveLength[i] += -20.8 * Convert.ToDouble(MicrometerTextBox.Text.Split("(")[0]) + 286.1664 + Convert.ToDouble(deltaTextBox.Text);//466.99
             }
-            plot.Plot.Add.SignalXY(lightFrameData.WaveLength, Value);
+            plot.Plot.Add.SignalXY(WaveLength, Value);
             if ((bool)colorCheckBox.IsChecked || color)
             {
-                var points = new Coordinates[lightFrameData.WaveLength.Length + 2];
+                var points = new Coordinates[WaveLength.Length + 2];
 
-                points[0] = new Coordinates(lightFrameData.WaveLength.First(), 0);
-                for (int i = 1; i <= lightFrameData.WaveLength.Length; ++i)
+                points[0] = new Coordinates(WaveLength.First(), 0);
+                for (int i = 1; i <= WaveLength.Length; ++i)
                 {
-                    points[i] = new Coordinates(lightFrameData.WaveLength[i - 1], Value[i - 1]);
+                    points[i] = new Coordinates(WaveLength[i - 1], Value[i - 1]);
                 }
-                points[lightFrameData.WaveLength.Length + 1] = new Coordinates(lightFrameData.WaveLength.Last(), 0);
+                points[WaveLength.Length + 1] = new Coordinates(WaveLength.Last(), 0);
 
                 var polygon = plot.Plot.Add.Polygon(points);
                 polygon.FillHatch = new Gradient
@@ -167,7 +171,7 @@ namespace SpectrographWPF
                 }
             }
 
-            plot.Plot.Axes.SetLimits(lightFrameData.WaveLength.Min(), lightFrameData.WaveLength.Max(), 0, 4500);
+            plot.Plot.Axes.SetLimits(WaveLength.Min(), WaveLength.Max(), 0, 4500);
             plot.Refresh();
 
             findPeakButton.IsEnabled = true;
@@ -234,6 +238,16 @@ namespace SpectrographWPF
         {
             color = true;
             PlotUpdate(LastLightFrameData);
+        }
+
+        public void ResetAxes(IPlotControl plotControl)
+        {
+            if (LastLightFrameData != null)
+            {
+                plotControl.Plot.Axes.SetLimits(LastLightFrameData.WaveLength.Min(), LastLightFrameData.WaveLength.Max(), 0, 4500);
+                plotControl.Refresh();
+                //PlotUpdate(LastLightFrameData);
+            }
         }
     }
 }

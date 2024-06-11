@@ -269,17 +269,17 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="千分尺η" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
                                     <ComboBox Name="MicrometerTextBox" Width="120" Grid.Column="1" IsEditable="True" IsTextSearchEnabled = "False" Padding="5">
-                                        <ComboBoxItem>19.903(-100)</ComboBoxItem>
-                                        <ComboBoxItem>19.201(-80)</ComboBoxItem>
-                                        <ComboBoxItem>18.499(-60)</ComboBoxItem>
-                                        <ComboBoxItem>17.797(-40)</ComboBoxItem>
-                                        <ComboBoxItem>17.095(-20)</ComboBoxItem>
-                                        <ComboBoxItem IsSelected="True">16.393(0)</ComboBoxItem>
-                                        <ComboBoxItem>15.691(20)</ComboBoxItem>
-                                        <ComboBoxItem>14.989(40)</ComboBoxItem>
-                                        <ComboBoxItem>14.287(60)</ComboBoxItem>
-                                        <ComboBoxItem>13.585(80)</ComboBoxItem>
-                                        <ComboBoxItem>12.883(100)</ComboBoxItem>
+                                        <ComboBoxItem>18.566(-100)</ComboBoxItem>
+                                        <ComboBoxItem>17.604(-80)</ComboBoxItem>
+                                        <ComboBoxItem>16.643(-60)</ComboBoxItem>
+                                        <ComboBoxItem>15.681(-40)</ComboBoxItem>
+                                        <ComboBoxItem>14.720(-20)</ComboBoxItem>
+                                        <ComboBoxItem IsSelected="True">13.758(0)</ComboBoxItem>
+                                        <ComboBoxItem>12.796(20)</ComboBoxItem>
+                                        <ComboBoxItem>11.835(40)</ComboBoxItem>
+                                        <ComboBoxItem>10.873(60)</ComboBoxItem>
+                                        <ComboBoxItem>9.912(80)</ComboBoxItem>
+                                        <ComboBoxItem>8.950(100)</ComboBoxItem>
                                     </ComboBox>
                                 </Grid>
                                 <!--校准-->

@@ -67,6 +67,7 @@ namespace SpectrographWPF.FrameData
             {
                 Value[i] += frameData.Value[i];
             }
+
         }
 
         public override string ToString()

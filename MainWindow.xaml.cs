@@ -3,6 +3,8 @@ using SpectrographWPF.Manager;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualBasic;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SpectrographWPF
 {
@@ -25,6 +27,7 @@ namespace SpectrographWPF
             //plot.Plot.XLabel("Pixel");
             //plot.Plot.YLabel("Amplitude");
             plot.Plot.Title("Spectrograph");
+            plot.Menu.Add("Reset Axes", ResetAxes);
 
             var portList = SerialPortManager.FindPort();
             if (portList.Length > 0)
