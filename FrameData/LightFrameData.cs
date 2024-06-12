@@ -15,7 +15,7 @@ namespace SpectrographWPF.FrameData
         public const double m = 1200;
         public const double F = 150;
         public double eta = 21;//Deg
-        public static double x0 = F * Math.Tan(DegToRad(16));
+        public static double x0 = F * Math.Tan(DegToRad(19.29));
         public static double deltax = 0;
         public static int num = 10550;
 

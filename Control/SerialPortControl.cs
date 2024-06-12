@@ -109,7 +109,6 @@ namespace SpectrographWPF
 
         public void PlotUpdate(LightFrameData lightFrameData)
         {
-
             var beforeRefresh = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             plot.Plot.Clear();
             LastLightFrameData = lightFrameData;
@@ -209,7 +208,35 @@ namespace SpectrographWPF
                     //FpsComboBox.IsEnabled = false;
                     sendDataButton.IsEnabled = false;
                     IntCheckBox.IsEnabled = false;
-                    if ((bool)IntCheckBox.IsChecked) FrameDataServer.Producer.IsInt = true;
+                    if ((bool)IntCheckBox.IsChecked)
+                    {
+                        FrameDataServer.Producer.IsInt = true;
+                        if (IntTimeTextBox.Text != "" && IntTimeTextBox.Text != "0")
+                        {
+                            int time = 0;
+                            long StartTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                            long EndTimestamp = 0;
+                            try
+                            {
+                                time = int.Parse(IntTimeTextBox.Text);
+                                Thread thread = new(() =>
+                                {
+                                    Thread.Sleep(time);
+                                    FrameDataServer.Stop();
+                                    this.Dispatcher.BeginInvoke(() =>
+                                    {
+                                        startWorkButton.Content = "开始";
+                                        //FpsComboBox.IsEnabled = true;
+                                        sendDataButton.IsEnabled = true;
+                                        IntCheckBox.IsEnabled = true;
+                                    });
+                                    EndTimestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                                });
+                                thread.Start();
+                            }
+                            catch { }
+                        }
+                    }
                     else FrameDataServer.Producer.IsInt = false;
                     FrameDataServer.Start();
                 }

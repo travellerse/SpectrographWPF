@@ -223,8 +223,12 @@
                                     <TextBox Name="peakingValueTextBox" Width="120" Grid.Column="1" Text="75" Padding="5">
                                     </TextBox>
                                 </Grid>
+                            </DockPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Name="PlotConfigPanel" Header="绘图" Margin="5,5,0,5" BorderThickness="1" BorderBrush="#FF7199E0">
+                            <DockPanel>
                                 <!--赋色-->
-                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                                <Grid Margin="0,10" DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="10*"></ColumnDefinition>
                                         <ColumnDefinition Width="60"></ColumnDefinition>
@@ -234,15 +238,11 @@
                                     <Button Name="colorButton" Click="ColorButton_OnClick" VerticalAlignment="Center" Grid.Column="1" IsEnabled="False" Content="赋色" Margin="0,0,0,0"></Button>
                                     <CheckBox Name="colorCheckBox" VerticalAlignment="Center" IsChecked="True" Grid.Column="2" IsEnabled="False" Margin="20,0,0,0"></CheckBox>
                                 </Grid>
-                            </DockPanel>
-                        </GroupBox>
-                        <GroupBox Grid.Row="2" Name="PlotConfigPanel" Header="绘图" Margin="5,5,0,5" BorderThickness="1" BorderBrush="#FF7199E0">
-                            <DockPanel>
                                 <!--暗场-->
-                                <Grid Margin="0,10" DockPanel.Dock="Top">
+                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="10*"></ColumnDefinition>
-                                        <ColumnDefinition Width="50"></ColumnDefinition>
+                                        <ColumnDefinition Width="60"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="暗场" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
                                     <CheckBox Name="DarkFieldCheckBox" VerticalAlignment="Center" Grid.Column="1" Margin="20,0,0,0"></CheckBox>
@@ -252,10 +252,19 @@
                                 <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="10*"></ColumnDefinition>
-                                        <ColumnDefinition Width="50"></ColumnDefinition>
+                                        <ColumnDefinition Width="60"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="积分" VerticalAlignment="Center" Grid.Column="0" Margin="0,0,25,0"></TextBlock>
                                     <CheckBox Name="IntCheckBox" VerticalAlignment="Center" Grid.Column="1" Margin="20,0,0,0"></CheckBox>
+                                </Grid>
+                                <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                        <ColumnDefinition Width="10*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="积分时间(ms)"  VerticalAlignment="Center" Grid.Column="0"></TextBlock>
+                                    <TextBox Name="IntTimeTextBox" Width="120" Grid.Column="1" Text="0" Padding="5">
+                                    </TextBox>
                                 </Grid>
                             </DockPanel>
                         </GroupBox>
